@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load static %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+    <link rel="stylesheet" href="{% static 'css/info.css' %}">
+<head>
+    <body>
+        <h1> How to use the scheduler?</h1>
+
+        <b>What is the website?</b>
+        
+        <div>(idk the name yet) is a website that generates study schedules based on the forgetting curve. 
+        The forgetting curve is a psychological concept that states that memory retention declines over time due to 
+        insufficient effort to retain information. According to the graph, you forget 50% of all new information 
+        within a day and 90% of all new information within a week. However, if you review and recall the information
+        a day after you have studied it, the forgetting curve resets and the information is retained in your brain
+        for longer. After each review, the amount of information you can remember increases. 
+        </div>
+
+        <img src="https://methodsof.com/wp-content/uploads/2022/09/Blog-34-Forgetting-Curve-Infographic.jpg">
+        
+        <br>
+
+        <b>How does the website work?</b>
+
+        <div> The website is based on an algorithm used by the language learning app SuperMemo. It works on 
+        the principle of the user entering an ‘Easiness Factor’ which represents how easy the task is, on a scale 
+        of 1 to 5. The Easiness Factor is calculated by taking an average of the user’s rating for the difficulty 
+        of the topic and familiarity with the topic. Then, the intervals are calculated using this formula:
+        <br>
+        <div id="code">
+            <code>EF = (level + familiarity)/2
+            <br>interval = 1
+            <br>nextinterval = EF * interval
+            <br>nextinterval = int(round(nextinterval))
+            </code>
+        </div>
+        The intervals will then be displayed between the selected start and end date. For easier topics that you 
+        are familiar with, the time between each study date will be longer. For more difficult topics you’re 
+        unfamiliar with, the time between each date will be lesser so you can study more often and master the 
+        topic.
+        </div>
+    </body>
+</head>
+</html>

@@ -1,0 +1,16 @@
+{% load static %}
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+<div>
+    <h1><b>Welcome to ___</b></h1>
+<button type="button"><a href="{% url 'login' %}"> Log in</a></button>
+<button type="button"><a href="{% url 'signup' %}">Sign up</a></button>
+</div>
+</body>
+
+
+</html>

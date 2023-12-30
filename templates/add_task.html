@@ -1,0 +1,39 @@
+{%load static%}
+<html>
+    <link rel="stylesheet" href="{% static 'css/add_task.css' %}">
+
+    <h1>NEW SCHEDULE</h1>
+<div>
+    <form method="post" action="{% url 'add_task' %}">
+        {% csrf_token %}
+        <textarea rows="30" cols="5" placeholder="Enter the topic name..." name="topic_name"></textarea>
+        <br>
+        <label>Familiarity with topic............</label>
+        <select name="familiar">
+            <option value="1">Unfamiliar</option>
+            <option value="2">Somewhat unfamiliar</option>
+            <option value="3">Neutral</option>
+            <option value="4">Somewhat familiar</option>
+            <option value="5">Very familiar</option>
+        </select>
+        <br>
+        <label>Difficulty of topic.....................</label>
+        <select name="easiness">
+            <option value="1">Very difficult</option>
+            <option value="2">Somewhat difficult</option>
+            <option value="3">Neutral</option>
+            <option value="4">Somewhat easy</option>
+            <option value="5">Very easy</option>
+        </select>
+        <br>
+        <label>Select the start date..........................</label>
+        <input type="date" name="start_date"><br>
+        <label>Select the end date...........................</label>
+        <input type="date" name="end_date"><br>
+        <input id="submit_button" type="submit" value="Done">
+        
+
+
+    </form>
+</div>
+</html>

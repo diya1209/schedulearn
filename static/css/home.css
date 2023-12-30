@@ -1,0 +1,76 @@
+body {
+    background-color: #2B2929 !important;
+    margin: 0%;
+}
+
+#add_task {
+    font-size: 20px;
+    background-color: #7449A8;
+    padding: 8px;
+    border-radius:10px;
+    font-family:Garamond, serif ;
+    position:absolute;
+    right: 65%;
+    top: 195%;
+    width: 300px;
+}
+
+.container {
+    margin-bottom: 200px; 
+    margin-top: 150px;
+}
+
+.fc {
+    color: #7449A8;
+    font-family: 'Garamond, serif';
+    width: 1100px;
+    height: fit-content;
+}
+
+.fc-day-number{
+    color: white;
+    font-size: 18px;
+    font-family: Garamond, serif;
+}
+
+.fc-event{
+    color: black !important;
+    background-color: grey !important;
+    font-size: 18px !important;
+    border: none !important;
+    font-family: Garamond, serif;
+    font-weight: 600 !important;
+}
+
+.fc-button {
+    border-radius: 15% !important;
+    font-size: 17px !important;
+}
+
+.fc-day-header{
+    font-family: Garamond, serif;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+h2 {
+    font-family: Garamond, serif !important;
+    font-weight: bold !important;
+}
+
+.fc-today {
+    background-color:#454141 !important;
+    border-color: white !important;
+}
+
+#info {
+    font-size: 20px;
+    background-color: #7449A8;
+    padding: 8px;
+    border-radius:10px;
+    font-family:Garamond, serif ;
+    position:absolute;
+    right: 13%;
+    top: 197.75%;
+    width: 300px;
+}

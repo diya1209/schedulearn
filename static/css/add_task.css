@@ -1,0 +1,70 @@
+body{
+    background-color: #2B2929;
+}
+
+h1 {
+    color: #7449A8;
+    text-align: center;
+    font-size: 40px;
+    position: fixed;
+    top: 1%;
+    right: 37%;
+}
+
+form {
+    font-family: Garamond, serif;
+    font-size: 20px;
+    color: white;
+    position: fixed;
+    right: 35%;
+    bottom: 20%;
+}
+
+textarea { 
+    font-family: Garamond, serif;
+    color: #2B2929;
+    font-size: 15px;
+    font-weight: bold;
+    width: 30%;
+    height: 15%;
+    position: fixed;
+    right: 35%;
+    bottom: 55%;
+}
+
+select {
+    color: #2B2929;
+    font-family: Garamond, serif;
+    font-weight: 600;
+    font-size: 15px;
+    background-color: white;
+}
+
+label, select, input, textarea{
+    margin-bottom: 20px;    
+}
+
+#submit_button {
+    background-color: #7449A8;
+    color: white;
+    font-family: Garamond, serif;
+    font-size: 15px;
+    border-radius: 8px;
+    width: 70px;
+    height: 35px;
+    position: inherit;
+    right: 48%;
+    bottom: 12%;
+}
+
+div {
+    border-color: #7449A8;
+    border-style: groove;
+    border-width: 8px;
+    border-radius: 20px;
+    position: fixed;
+    top: 19.3%;
+    right: 26.5%;
+    width: 580px;
+    height: 385px;
+}
