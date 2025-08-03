@@ -11,13 +11,11 @@
   --shadow-color: rgba(0, 0, 0, 0.1);
   
   /* Gradient Colors */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  --gradient-accent: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
   
   /* Accent Colors */
-  --primary-color: #667eea;
-  --primary-hover: #5a67d8;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
@@ -744,22 +742,19 @@ p {
 }
 
 .fc-today-button {
-  background: var(--bg-secondary) !important;
+  background: var(--bg-tertiary) !important;
   border: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
-  font-size: 0.8rem !important;
+  font-size: 0.875rem !important;
   font-weight: 500 !important;
-  padding: 8px 16px !important;
-  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
   transition: background-color 0.2s ease !important;
-  margin-left: 12px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: none !important;
 }
 
 .fc-today-button:hover {
-  background: var(--bg-tertiary) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  background: var(--bg-secondary) !important;
 }
 
 .fc-toolbar {
