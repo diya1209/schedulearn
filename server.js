@@ -178,7 +178,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
     // Insert task
     const taskResult = await db.run(`
       INSERT INTO tasks (user_id, topic_name, topic_familiarity, topic_difficulty, start_date, end_date, task_color)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate, taskColor || '#4f46e5');
+      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate, taskColor || '#475569');
     
     const taskId = taskResult.lastID;
     
@@ -192,7 +192,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
     // Add initial event
     await db.run(`
       INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date, task_color)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate, taskColor || '#4f46e5');
+      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate, taskColor || '#475569');
     
     // Generate review schedule
     for (let i = 1; i < 100; i++) {
@@ -207,7 +207,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
         const eventDateStr = eventDate.toISOString().split('T')[0];
         await db.run(`
           INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date, task_color)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate, taskColor || '#4f46e5');
+          VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate, taskColor || '#475569');
       } else {
         break;
       }
@@ -233,8 +233,8 @@ app.get('/api/events', requireAuth, async (req, res) => {
       start: event.event_date,
       end: event.event_date,
       allDay: true,
-      backgroundColor: event.task_color || '#4f46e5',
-      borderColor: event.task_color || '#4f46e5'
+      backgroundColor: event.task_color || '#475569',
+      borderColor: event.task_color || '#475569'
     }));
     
     res.json(formattedEvents);

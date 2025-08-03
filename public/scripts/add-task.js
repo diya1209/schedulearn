@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
       difficulty: parseInt(formData.get('difficulty')),
       startDate: formData.get('startDate'),
       endDate: formData.get('endDate'),
-      taskColor: formData.get('taskColor') || '#4f46e5'
+      taskColor: formData.get('taskColor') || '#475569'
     };
     
     // Validation
