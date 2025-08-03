@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Task - Schedulearn</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="dark-theme">
+    <div class="task-container">
+        <nav class="task-nav">
+            <div class="nav-brand">
+                <a href="/dashboard">← Back to Dashboard</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </nav>
+
+        <main class="task-main">
+            <div class="task-header">
+                <h1>Create New Study Schedule</h1>
+                <p>Tell us about your topic and we'll create an optimal review schedule</p>
+            </div>
+
+            <form id="addTaskForm" class="task-form">
+                <div class="form-section">
+                    <h3>Topic Information</h3>
+                    <div class="form-group">
+                        <label for="topicName">What do you want to study?</label>
+                        <textarea id="topicName" name="topicName" placeholder="e.g., Calculus derivatives, Spanish vocabulary, Biology cell structure..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Assessment</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="familiarity">How familiar are you with this topic?</label>
+                            <select id="familiarity" name="familiarity" required>
+                                <option value="">Select familiarity level</option>
+                                <option value="1">Completely new to me</option>
+                                <option value="2">Somewhat unfamiliar</option>
+                                <option value="3">Neutral</option>
+                                <option value="4">Somewhat familiar</option>
+                                <option value="5">Very familiar</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="difficulty">How difficult is this topic?</label>
+                            <select id="difficulty" name="difficulty" required>
+                                <option value="">Select difficulty level</option>
+                                <option value="1">Very difficult</option>
+                                <option value="2">Somewhat difficult</option>
+                                <option value="3">Moderate</option>
+                                <option value="4">Somewhat easy</option>
+                                <option value="5">Very easy</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Study Period</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate" name="startDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate" name="endDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Schedule</button>
+                </div>
+            </form>
+
+            <div class="info-section">
+                <h3>How it works</h3>
+                <p>Our algorithm uses the forgetting curve to determine optimal review intervals. Topics that are more difficult or unfamiliar will have shorter intervals between reviews, while easier or familiar topics will have longer intervals.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/add-task.js"></script>
+</body>
+</html>

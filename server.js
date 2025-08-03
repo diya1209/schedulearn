@@ -1,0 +1,244 @@
+import express from 'express';
+import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
+import session from 'express-session';
+import SQLiteStore from 'connect-sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const db = new Database('schedulearn.db');
+const SQLiteStoreSession = SQLiteStore(session);
+
+// Initialize database tables
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    topic_name TEXT NOT NULL,
+    topic_familiarity INTEGER NOT NULL,
+    topic_difficulty INTEGER NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+  );
+
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    task_id INTEGER NOT NULL,
+    topic_name TEXT NOT NULL,
+    event_date DATE NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (task_id) REFERENCES tasks (id)
+  );
+`);
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+app.use(session({
+  store: new SQLiteStoreSession({
+    db: 'sessions.db',
+    table: 'sessions'
+  }),
+  secret: 'schedulearn-secret-key-2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+  if (req.session.userId) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+};
+
+// Routes
+app.get('/', (req, res) => {
+  if (req.session.userId) {
+    res.redirect('/dashboard');
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
+});
+
+app.get('/login', (req, res) => {
+  if (req.session.userId) {
+    res.redirect('/dashboard');
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+  }
+});
+
+app.get('/signup', (req, res) => {
+  if (req.session.userId) {
+    res.redirect('/dashboard');
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+  }
+});
+
+app.get('/dashboard', requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+app.get('/add-task', requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'add-task.html'));
+});
+
+// API Routes
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+  
+  try {
+    const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hashedPassword);
+    
+    req.session.userId = result.lastInsertRowid;
+    req.session.username = username;
+    
+    res.json({ success: true, redirect: '/dashboard' });
+  } catch (error) {
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+  
+  try {
+    const user = db.prepare('SELECT id, username, password FROM users WHERE username = ?').get(username);
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    req.session.userId = user.id;
+    req.session.username = user.username;
+    
+    res.json({ success: true, redirect: '/dashboard' });
+  } catch (error) {
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy();
+  res.json({ success: true, redirect: '/' });
+});
+
+app.post('/api/add-task', requireAuth, (req, res) => {
+  const { topicName, familiarity, difficulty, startDate, endDate } = req.body;
+  const userId = req.session.userId;
+  
+  try {
+    // Insert task
+    const taskResult = db.prepare(`
+      INSERT INTO tasks (user_id, topic_name, topic_familiarity, topic_difficulty, start_date, end_date)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(userId, topicName, familiarity, difficulty, startDate, endDate);
+    
+    const taskId = taskResult.lastInsertRowid;
+    
+    // Calculate forgetting curve schedule
+    const EF = Math.max((parseInt(difficulty) + parseInt(familiarity)) / 2, 1.5);
+    let interval = 1;
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // Add initial event
+    db.prepare(`
+      INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(userId, taskId, topicName, startDate, startDate, endDate);
+    
+    // Generate review schedule
+    for (let i = 1; i < 100; i++) {
+      const nextInterval = Math.round(EF * interval);
+      if (nextInterval > 1000) break;
+      
+      interval = nextInterval;
+      const eventDate = new Date(start);
+      eventDate.setDate(eventDate.getDate() + nextInterval);
+      
+      if (eventDate <= end) {
+        const eventDateStr = eventDate.toISOString().split('T')[0];
+        db.prepare(`
+          INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).run(userId, taskId, topicName, eventDateStr, startDate, endDate);
+      } else {
+        break;
+      }
+    }
+    
+    res.json({ success: true, message: 'Task added successfully' });
+  } catch (error) {
+    console.error('Error adding task:', error);
+    res.status(500).json({ error: 'Failed to add task' });
+  }
+});
+
+app.get('/api/events', requireAuth, (req, res) => {
+  try {
+    const events = db.prepare(`
+      SELECT topic_name, event_date, start_date, end_date
+      FROM events
+      WHERE user_id = ?
+      ORDER BY event_date
+    `).all(req.session.userId);
+    
+    const formattedEvents = events.map(event => ({
+      title: event.topic_name,
+      start: event.event_date,
+      end: event.event_date,
+      allDay: true
+    }));
+    
+    res.json(formattedEvents);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
+app.get('/api/user', requireAuth, (req, res) => {
+  res.json({ username: req.session.username });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Schedulearn server running on port ${PORT}`);
+});

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedulearn - Smart Study Scheduling</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="dark-theme">
+    <div class="landing-container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>Schedulearn</h1>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <a href="/login" class="btn btn-outline">Login</a>
+                <a href="/signup" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+
+        <main class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Master Your Studies with the
+                    <span class="gradient-text">Forgetting Curve</span>
+                </h1>
+                <p class="hero-description">
+                    Schedulearn uses scientifically-proven spaced repetition to optimize your study schedule. 
+                    Never forget what you've learned again.
+                </p>
+                <div class="hero-actions">
+                    <a href="/signup" class="btn btn-primary btn-large">Get Started Free</a>
+                    <a href="#how-it-works" class="btn btn-outline btn-large">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="forgetting-curve-demo">
+                    <div class="curve-line"></div>
+                    <div class="review-points">
+                        <div class="point point-1">Day 1</div>
+                        <div class="point point-2">Day 3</div>
+                        <div class="point point-3">Day 7</div>
+                        <div class="point point-4">Day 21</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <section id="how-it-works" class="features-section">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>Add Your Topics</h3>
+                        <p>Input what you want to study, rate the difficulty and your familiarity with the subject.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h3>AI-Powered Scheduling</h3>
+                        <p>Our algorithm calculates optimal review intervals based on the forgetting curve.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📅</div>
+                        <h3>Smart Calendar</h3>
+                        <p>Get a personalized study calendar that adapts to your learning pace.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 Schedulearn. Built with the science of learning.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/landing.js"></script>
+</body>
+</html>
