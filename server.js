@@ -38,6 +38,7 @@ await db.exec(`
     topic_difficulty INTEGER NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
+    task_color TEXT DEFAULT '#4f46e5',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id)
   );
@@ -50,6 +51,7 @@ await db.exec(`
     event_date DATE NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
+    task_color TEXT DEFAULT '#4f46e5',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (task_id) REFERENCES tasks (id)
@@ -169,14 +171,14 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.post('/api/add-task', requireAuth, async (req, res) => {
-  const { topicName, familiarity, difficulty, startDate, endDate } = req.body;
+  const { topicName, familiarity, difficulty, startDate, endDate, taskColor } = req.body;
   const userId = req.session.userId;
   
   try {
     // Insert task
     const taskResult = await db.run(`
-      INSERT INTO tasks (user_id, topic_name, topic_familiarity, topic_difficulty, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate);
+      INSERT INTO tasks (user_id, topic_name, topic_familiarity, topic_difficulty, start_date, end_date, task_color)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate, taskColor || '#4f46e5');
     
     const taskId = taskResult.lastID;
     
@@ -189,8 +191,8 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
     
     // Add initial event
     await db.run(`
-      INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate);
+      INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date, task_color)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate, taskColor || '#4f46e5');
     
     // Generate review schedule
     for (let i = 1; i < 100; i++) {
@@ -204,8 +206,8 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
       if (eventDate <= end) {
         const eventDateStr = eventDate.toISOString().split('T')[0];
         await db.run(`
-          INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date)
-          VALUES (?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate);
+          INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date, task_color)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate, taskColor || '#4f46e5');
       } else {
         break;
       }
@@ -221,7 +223,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
 app.get('/api/events', requireAuth, async (req, res) => {
   try {
     const events = await db.all(`
-      SELECT topic_name, event_date, start_date, end_date
+      SELECT topic_name, event_date, start_date, end_date, task_color
       FROM events
       WHERE user_id = ?
       ORDER BY event_date`, req.session.userId);
@@ -230,7 +232,9 @@ app.get('/api/events', requireAuth, async (req, res) => {
       title: event.topic_name,
       start: event.event_date,
       end: event.event_date,
-      allDay: true
+      allDay: true,
+      backgroundColor: event.task_color || '#4f46e5',
+      borderColor: event.task_color || '#4f46e5'
     }));
     
     res.json(formattedEvents);
