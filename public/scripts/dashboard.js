@@ -32,8 +32,7 @@ function initializeCalendar() {
     initialView: 'dayGridMonth',
     headerToolbar: {
       left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,listWeek'
+      center: 'title'
     },
     events: '/api/events',
     eventDisplay: 'block',

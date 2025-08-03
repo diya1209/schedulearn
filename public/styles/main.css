@@ -688,16 +688,19 @@ p {
 }
 
 .fc-button-primary {
-  background: var(--gradient-primary) !important;
-  border: none !important;
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
 }
 
 .fc-button-primary:hover {
-  background: var(--primary-hover) !important;
+  background: var(--bg-secondary) !important;
+  border-color: var(--primary-color) !important;
 }
 
 .fc-today {
-  background: rgba(102, 126, 234, 0.1) !important;
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
 }
 
 /* Responsive Design */
