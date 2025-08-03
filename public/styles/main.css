@@ -692,10 +692,12 @@ p {
 }
 
 .fc-event {
-  background: var(--gradient-primary) !important;
+  background: rgba(71, 85, 105, 0.8) !important;
   border: none !important;
   border-radius: var(--radius-sm) !important;
   font-weight: 500 !important;
+  color: #e2e8f0 !important;
+  backdrop-filter: blur(4px);
 }
 
 .fc-button-primary {
