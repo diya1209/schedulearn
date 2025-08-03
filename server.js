@@ -1,5 +1,6 @@
 import express from 'express';
-import Database from 'better-sqlite3';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import bcrypt from 'bcryptjs';
 import session from 'express-session';
 import SQLiteStore from 'connect-sqlite3';
@@ -10,11 +11,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const db = new Database('schedulearn.db');
 const SQLiteStoreSession = SQLiteStore(session);
 
+// Initialize database
+let db;
+async function initDatabase() {
+  db = await open({
+    filename: 'schedulearn.db',
+    driver: sqlite3.Database
+  });
+
 // Initialize database tables
-db.exec(`
+await db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -47,6 +55,7 @@ db.exec(`
     FOREIGN KEY (task_id) REFERENCES tasks (id)
   );
 `);
+}
 
 // Middleware
 app.use(express.json());
@@ -114,15 +123,15 @@ app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   
   try {
-    const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+    const existingUser = await db.get('SELECT id FROM users WHERE username = ?', username);
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const result = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hashedPassword);
+    const result = await db.run('INSERT INTO users (username, password) VALUES (?, ?)', username, hashedPassword);
     
-    req.session.userId = result.lastInsertRowid;
+    req.session.userId = result.lastID;
     req.session.username = username;
     
     res.json({ success: true, redirect: '/dashboard' });
@@ -135,7 +144,7 @@ app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   
   try {
-    const user = db.prepare('SELECT id, username, password FROM users WHERE username = ?').get(username);
+    const user = await db.get('SELECT id, username, password FROM users WHERE username = ?', username);
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
@@ -165,12 +174,11 @@ app.post('/api/add-task', requireAuth, (req, res) => {
   
   try {
     // Insert task
-    const taskResult = db.prepare(`
+    const taskResult = await db.run(`
       INSERT INTO tasks (user_id, topic_name, topic_familiarity, topic_difficulty, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(userId, topicName, familiarity, difficulty, startDate, endDate);
+      VALUES (?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate);
     
-    const taskId = taskResult.lastInsertRowid;
+    const taskId = taskResult.lastID;
     
     // Calculate forgetting curve schedule
     const EF = Math.max((parseInt(difficulty) + parseInt(familiarity)) / 2, 1.5);
@@ -180,10 +188,9 @@ app.post('/api/add-task', requireAuth, (req, res) => {
     const end = new Date(endDate);
     
     // Add initial event
-    db.prepare(`
+    await db.run(`
       INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(userId, taskId, topicName, startDate, startDate, endDate);
+      VALUES (?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate);
     
     // Generate review schedule
     for (let i = 1; i < 100; i++) {
@@ -196,10 +203,9 @@ app.post('/api/add-task', requireAuth, (req, res) => {
       
       if (eventDate <= end) {
         const eventDateStr = eventDate.toISOString().split('T')[0];
-        db.prepare(`
+        await db.run(`
           INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date)
-          VALUES (?, ?, ?, ?, ?, ?)
-        `).run(userId, taskId, topicName, eventDateStr, startDate, endDate);
+          VALUES (?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate);
       } else {
         break;
       }
@@ -214,12 +220,11 @@ app.post('/api/add-task', requireAuth, (req, res) => {
 
 app.get('/api/events', requireAuth, (req, res) => {
   try {
-    const events = db.prepare(`
+    const events = await db.all(`
       SELECT topic_name, event_date, start_date, end_date
       FROM events
       WHERE user_id = ?
-      ORDER BY event_date
-    `).all(req.session.userId);
+      ORDER BY event_date`, req.session.userId);
     
     const formattedEvents = events.map(event => ({
       title: event.topic_name,
@@ -238,7 +243,14 @@ app.get('/api/user', requireAuth, (req, res) => {
   res.json({ username: req.session.username });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Schedulearn server running on port ${PORT}`);
-});
+// Start server after database initialization
+async function startServer() {
+  await initDatabase();
+  
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Schedulearn server running on port ${PORT}`);
+  });
+}
+
+startServer().catch(console.error);
