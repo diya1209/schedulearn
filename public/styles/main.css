@@ -699,8 +699,39 @@ p {
 }
 
 .fc-today {
-  background: var(--bg-tertiary) !important;
+  background: #404040 !important;
   border-color: var(--border-color) !important;
+}
+
+.fc-toolbar-title {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.fc-button-group {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.fc-prev-button,
+.fc-next-button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+  font-size: 1.2rem !important;
+  padding: 8px !important;
+  border-radius: 6px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.fc-prev-button:hover,
+.fc-next-button:hover {
+  background: var(--bg-tertiary) !important;
+}
+
+.fc-toolbar {
+  margin-bottom: 1.5rem !important;
 }
 
 /* Responsive Design */

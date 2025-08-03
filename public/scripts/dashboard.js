@@ -31,8 +31,9 @@ function initializeCalendar() {
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     headerToolbar: {
-      left: 'prev,next today',
-      center: 'title'
+      left: 'prev,next',
+      center: 'title',
+      right: ''
     },
     events: '/api/events',
     eventDisplay: 'block',
