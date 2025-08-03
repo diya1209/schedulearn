@@ -31,10 +31,11 @@ function initializeCalendar() {
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     headerToolbar: {
-      left: 'prev,next today',
+      left: 'prev,next',
       center: 'title',
       right: 'today'
     },
+    titleFormat: { month: 'long' },
     events: '/api/events',
     eventDisplay: 'block',
     dayMaxEvents: 3,
