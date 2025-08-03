@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedulearn Design Templates</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .template {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #333;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .template:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .template h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .template-preview {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Template 1: Gradient Modern */
+        .template-1 .template-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .template-1 h2 {
+            color: #667eea;
+        }
+
+        .template-1 .mock-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 1rem;
+        }
+
+        .template-1 .mock-logo {
+            font-weight: bold;
+            color: white;
+        }
+
+        .template-1 .mock-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .template-1 .mock-btn {
+            padding: 0.3rem 0.8rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        /* Template 2: Neon Cyber */
+        .template-2 .template-preview {
+            background: #0a0a0a;
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 20px rgba(0,255,136,0.3);
+        }
+
+        .template-2 h2 {
+            color: #00ff88;
+        }
+
+        .template-2 .mock-card {
+            background: rgba(0,255,136,0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .template-2 .mock-text {
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Template 3: Minimalist Clean */
+        .template-3 .template-preview {
+            background: #fafafa;
+            color: #333;
+        }
+
+        .template-3 h2 {
+            color: #6366f1;
+        }
+
+        .template-3 .mock-header {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+
+        .template-3 .mock-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .template-3 .mock-item {
+            background: white;
+            padding: 0.8rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Template 4: Dark Professional */
+        .template-4 .template-preview {
+            background: #1e1e1e;
+            border: 1px solid #404040;
+        }
+
+        .template-4 h2 {
+            color: #f59e0b;
+        }
+
+        .template-4 .mock-sidebar {
+            width: 60px;
+            height: 100%;
+            background: #2d2d2d;
+            position: absolute;
+            left: 0;
+            top: 0;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .template-4 .mock-main {
+            margin-left: 70px;
+            padding: 1rem;
+        }
+
+        .template-4 .mock-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-top: 1rem;
+        }
+
+        .template-4 .mock-day {
+            aspect-ratio: 1;
+            background: #404040;
+            border-radius: 4px;
+        }
+
+        .description {
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .features {
+            margin-top: 1rem;
+        }
+
+        .features h4 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .features li {
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        /* Color swatches for each template */
+        .template-1 .swatch-1 { background: #667eea; }
+        .template-1 .swatch-2 { background: #764ba2; }
+        .template-1 .swatch-3 { background: #1a1a1a; }
+        .template-1 .swatch-4 { background: #ffffff; }
+
+        .template-2 .swatch-1 { background: #00ff88; }
+        .template-2 .swatch-2 { background: #0a0a0a; }
+        .template-2 .swatch-3 { background: #ff0080; }
+        .template-2 .swatch-4 { background: #00d4ff; }
+
+        .template-3 .swatch-1 { background: #6366f1; }
+        .template-3 .swatch-2 { background: #fafafa; }
+        .template-3 .swatch-3 { background: #ffffff; }
+        .template-3 .swatch-4 { background: #e5e7eb; }
+
+        .template-4 .swatch-1 { background: #f59e0b; }
+        .template-4 .swatch-2 { background: #1e1e1e; }
+        .template-4 .swatch-3 { background: #404040; }
+        .template-4 .swatch-4 { background: #ffffff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Schedulearn Design Templates</h1>
+        
+        <div class="templates-grid">
+            <!-- Template 1: Gradient Modern -->
+            <div class="template template-1">
+                <h2>1. Gradient Modern</h2>
+                <div class="template-preview">
+                    <div class="mock-nav">
+                        <div class="mock-logo">Schedulearn</div>
+                        <div class="mock-buttons">
+                            <div class="mock-btn">Dashboard</div>
+                            <div class="mock-btn">Add Task</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <div style="font-size: 1.2rem; margin-bottom: 1rem;">Welcome back!</div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 0.9rem;">Next Review: Mathematics</div>
+                            <div style="font-size: 0.8rem; opacity: 0.8;">in 2 hours</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    A modern design with beautiful gradients and smooth transitions. Perfect for users who love vibrant, contemporary interfaces.
+                </div>
+                <div class="features">
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Gradient backgrounds and accents</li>
+                        <li>Smooth animations and transitions</li>
+                        <li>Card-based layout</li>
+                        <li>Modern typography</li>
+                    </ul>
+                </div>
+                <div class="color-palette">
+                    <div class="color-swatch swatch-1"></div>
+                    <div class="color-swatch swatch-2"></div>
+                    <div class="color-swatch swatch-3"></div>
+                    <div class="color-swatch swatch-4"></div>
+                </div>
+            </div>
+
+            <!-- Template 2: Neon Cyber -->
+            <div class="template template-2">
+                <h2>2. Neon Cyber</h2>
+                <div class="template-preview">
+                    <div class="mock-text" style="text-align: center; margin-bottom: 1rem;">
+                        &gt; SCHEDULEARN_SYSTEM.EXE
+                    </div>
+                    <div class="mock-card">
+                        <div class="mock-text">TASK_001: Physics_Quantum</div>
+                        <div style="font-size: 0.8rem; color: #00ff88; opacity: 0.7;">STATUS: ACTIVE</div>
+                    </div>
+                    <div class="mock-card">
+                        <div class="mock-text">NEXT_REVIEW: 14:30:00</div>
+                        <div style="font-size: 0.8rem; color: #00ff88; opacity: 0.7;">PRIORITY: HIGH</div>
+                    </div>
+                </div>
+                <div class="description">
+                    A futuristic cyberpunk-inspired design with neon accents and terminal-like aesthetics. Great for tech enthusiasts and gamers.
+                </div>
+                <div class="features">
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Neon green accent colors</li>
+                        <li>Terminal/console styling</li>
+                        <li>Glowing borders and effects</li>
+                        <li>Monospace typography</li>
+                    </ul>
+                </div>
+                <div class="color-palette">
+                    <div class="color-swatch swatch-1"></div>
+                    <div class="color-swatch swatch-2"></div>
+                    <div class="color-swatch swatch-3"></div>
+                    <div class="color-swatch swatch-4"></div>
+                </div>
+            </div>
+
+            <!-- Template 3: Minimalist Clean -->
+            <div class="template template-3">
+                <h2>3. Minimalist Clean</h2>
+                <div class="template-preview">
+                    <div class="mock-header">
+                        <div style="font-weight: bold; color: #6366f1;">Schedulearn</div>
+                    </div>
+                    <div class="mock-content">
+                        <div class="mock-item">
+                            <div style="font-weight: 600; color: #374151;">Today's Tasks</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">3 reviews pending</div>
+                        </div>
+                        <div class="mock-item">
+                            <div style="font-weight: 600; color: #374151;">Progress</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">85% complete</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    Clean, minimalist design focusing on content and usability. Perfect for users who prefer simplicity and clarity.
+                </div>
+                <div class="features">
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Light theme with dark mode toggle</li>
+                        <li>Minimal, clean interface</li>
+                        <li>Subtle shadows and spacing</li>
+                        <li>Focus on readability</li>
+                    </ul>
+                </div>
+                <div class="color-palette">
+                    <div class="color-swatch swatch-1"></div>
+                    <div class="color-swatch swatch-2"></div>
+                    <div class="color-swatch swatch-3"></div>
+                    <div class="color-swatch swatch-4"></div>
+                </div>
+            </div>
+
+            <!-- Template 4: Dark Professional -->
+            <div class="template template-4">
+                <h2>4. Dark Professional</h2>
+                <div class="template-preview">
+                    <div class="mock-sidebar"></div>
+                    <div class="mock-main">
+                        <div style="color: #f59e0b; font-weight: bold; margin-bottom: 1rem;">Dashboard</div>
+                        <div style="color: #d1d5db; font-size: 0.9rem; margin-bottom: 1rem;">Study Calendar</div>
+                        <div class="mock-calendar">
+                            <div class="mock-day"></div>
+                            <div class="mock-day"></div>
+                            <div class="mock-day" style="background: #f59e0b;"></div>
+                            <div class="mock-day"></div>
+                            <div class="mock-day"></div>
+                            <div class="mock-day"></div>
+                            <div class="mock-day"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    Professional dark theme with sidebar navigation and calendar focus. Ideal for serious students and professionals.
+                </div>
+                <div class="features">
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Dark professional theme</li>
+                        <li>Sidebar navigation</li>
+                        <li>Calendar-centric design</li>
+                        <li>Amber accent colors</li>
+                    </ul>
+                </div>
+                <div class="color-palette">
+                    <div class="color-swatch swatch-1"></div>
+                    <div class="color-swatch swatch-2"></div>
+                    <div class="color-swatch swatch-3"></div>
+                    <div class="color-swatch swatch-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: #1a1a1a; border-radius: 12px;">
+            <h3 style="margin-bottom: 1rem; color: #fff;">Choose Your Template</h3>
+            <p style="color: #aaa; margin-bottom: 1.5rem;">Each template includes dark/light mode toggle, responsive design, and modern UI components.</p>
+            <p style="color: #888; font-size: 0.9rem;">Let me know which template you prefer, and I'll implement it for your Schedulearn app!</p>
+        </div>
+    </div>
+</body>
+</html>
