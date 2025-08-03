@@ -395,6 +395,19 @@ p {
   color: var(--text-primary);
   font-size: 0.875rem;
   transition: border-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  background: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 4px;
+  transition: background-color var(--transition-fast);
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background: var(--primary-color);
 }
 
 .form-group input:focus,
@@ -731,18 +744,22 @@ p {
 }
 
 .fc-today-button {
-  background: var(--bg-tertiary) !important;
+  background: var(--bg-secondary) !important;
   border: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
-  font-size: 0.875rem !important;
-  padding: 6px 12px !important;
-  border-radius: 6px !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
   transition: background-color 0.2s ease !important;
-  margin-left: 8px !important;
+  margin-left: 12px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .fc-today-button:hover {
-  background: var(--bg-secondary) !important;
+  background: var(--bg-tertiary) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 .fc-toolbar {
