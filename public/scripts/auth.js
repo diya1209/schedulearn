@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const signupForm = document.getElementById('signupForm');
 
+  // Setup password toggle functionality
+  setupPasswordToggle();
+
   // Handle login form submission
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
@@ -106,5 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
         errorDiv.remove();
       }
     }, 5000);
+  }
+
+  // Password toggle functionality
+  function setupPasswordToggle() {
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordInput = document.getElementById('password');
+    
+    if (passwordToggle && passwordInput) {
+      passwordToggle.addEventListener('click', () => {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        
+        const icon = passwordToggle.querySelector('.password-toggle-icon');
+        icon.textContent = isPassword ? '🙈' : '👁️';
+      });
+    }
   }
 });
