@@ -168,7 +168,7 @@ app.post('/api/logout', (req, res) => {
   res.json({ success: true, redirect: '/' });
 });
 
-app.post('/api/add-task', requireAuth, (req, res) => {
+app.post('/api/add-task', requireAuth, async (req, res) => {
   const { topicName, familiarity, difficulty, startDate, endDate } = req.body;
   const userId = req.session.userId;
   
@@ -218,7 +218,7 @@ app.post('/api/add-task', requireAuth, (req, res) => {
   }
 });
 
-app.get('/api/events', requireAuth, (req, res) => {
+app.get('/api/events', requireAuth, async (req, res) => {
   try {
     const events = await db.all(`
       SELECT topic_name, event_date, start_date, end_date
