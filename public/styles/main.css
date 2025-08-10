@@ -961,6 +961,7 @@ p {
   border-radius: 6px !important;
   transition: background-color 0.2s ease !important;
   box-shadow: none !important;
+  text-transform: capitalize !important;
 }
 
 .fc-today-button:hover {
