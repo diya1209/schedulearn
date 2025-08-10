@@ -754,8 +754,8 @@ p {
 }
 
 .color-option {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid transparent;
@@ -884,8 +884,6 @@ p {
 .form-section h3 {
   color: var(--text-primary);
   margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .form-row {
