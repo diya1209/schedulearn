@@ -370,31 +370,6 @@ app.post('/api/delete-schedule', requireAuth, async (req, res) => {
   }
 });
 
-// Add a debug endpoint to check database state
-app.get('/api/debug/events', requireAuth, async (req, res) => {
-  try {
-    const events = await db.all(`
-      SELECT * FROM events WHERE user_id = ?`, req.session.userId);
-    const tasks = await db.all(`
-      SELECT * FROM tasks WHERE user_id = ?`, req.session.userId);
-    
-    res.json({ events, tasks });
-  } catch (error) {
-    console.error('Debug error:', error);
-    res.status(500).json({ error: 'Debug failed' });
-  }
-});
-      DELETE FROM tasks 
-      WHERE user_id = ? AND topic_name = ?`, 
-      userId, topicName);
-    
-    res.json({ success: true, message: 'Schedule deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting schedule:', error);
-    res.status(500).json({ error: 'Failed to delete schedule' });
-  }
-});
-
 // Start server after database initialization
 async function startServer() {
   await initDatabase();
