@@ -1049,7 +1049,7 @@ p {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: var(--spacing-2xl);
-  max-width: 400px;
+  max-width: 320px;
   width: 90%;
   text-align: center;
   box-shadow: 0 20px 40px var(--shadow-color);
@@ -1062,7 +1062,7 @@ p {
 }
 
 .popup-icon {
-  font-size: 3rem;
+  font-size: 2rem;
   margin-bottom: var(--spacing-lg);
   display: block;
 }
