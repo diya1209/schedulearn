@@ -42,6 +42,7 @@ function closeSuccessPopup() {
 
 // Make closeSuccessPopup available globally
 window.closeSuccessPopup = closeSuccessPopup;
+window.closeTaskPopup = closeTaskPopup;
 
 async function loadUserInfo() {
   try {
@@ -73,7 +74,7 @@ function initializeCalendar() {
     height: 'auto',
     eventClick: function(info) {
       // Show event details
-      showEventDetails(info.event);
+      showTaskDetailPopup(info.event);
     },
     dateClick: function(info) {
       // Handle date click - could add quick task creation
@@ -91,16 +92,156 @@ function initializeCalendar() {
   window.calendar = calendar;
 }
 
-function showEventDetails(event) {
-  // Create a simple modal or alert for event details
-  const details = `
-    Topic: ${event.title}
-    Date: ${event.start.toLocaleDateString()}
-    
-    This is a scheduled review session based on the forgetting curve algorithm.
-  `;
+function showTaskDetailPopup(event) {
+  const popup = document.getElementById('taskDetailPopup');
   
-  alert(details);
+  // Populate popup with event data
+  document.getElementById('taskTopicName').textContent = event.title;
+  document.getElementById('taskReviewDate').textContent = event.start.toLocaleDateString();
+  
+  // Get study period from event properties
+  const startDate = event.extendedProps?.startDate || event.start.toISOString().split('T')[0];
+  const endDate = event.extendedProps?.endDate || event.start.toISOString().split('T')[0];
+  document.getElementById('taskStudyPeriod').textContent = `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`;
+  
+  // Store event data for delete operations
+  popup.dataset.eventTitle = event.title;
+  popup.dataset.eventDate = event.start.toISOString().split('T')[0];
+  popup.dataset.startDate = startDate;
+  popup.dataset.endDate = endDate;
+  
+  // Setup delete button handlers
+  setupDeleteHandlers();
+  
+  // Show popup
+  popup.classList.add('show');
+}
+
+function closeTaskPopup() {
+  const popup = document.getElementById('taskDetailPopup');
+  popup.classList.remove('show');
+}
+
+function setupDeleteHandlers() {
+  const deleteTaskBtn = document.getElementById('deleteTaskBtn');
+  const deleteScheduleBtn = document.getElementById('deleteScheduleBtn');
+  
+  // Remove existing listeners
+  deleteTaskBtn.replaceWith(deleteTaskBtn.cloneNode(true));
+  deleteScheduleBtn.replaceWith(deleteScheduleBtn.cloneNode(true));
+  
+  // Get new references
+  const newDeleteTaskBtn = document.getElementById('deleteTaskBtn');
+  const newDeleteScheduleBtn = document.getElementById('deleteScheduleBtn');
+  
+  newDeleteTaskBtn.addEventListener('click', handleDeleteTask);
+  newDeleteScheduleBtn.addEventListener('click', handleDeleteSchedule);
+}
+
+async function handleDeleteTask() {
+  const popup = document.getElementById('taskDetailPopup');
+  const eventTitle = popup.dataset.eventTitle;
+  const eventDate = popup.dataset.eventDate;
+  
+  if (!confirm(`Are you sure you want to delete the review for "${eventTitle}" on ${new Date(eventDate).toLocaleDateString()}?`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/delete-task', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        topicName: eventTitle,
+        eventDate: eventDate
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      closeTaskPopup();
+      // Refresh calendar
+      if (window.calendar) {
+        window.calendar.refetchEvents();
+      }
+      showMessage('Review deleted successfully!', 'success');
+    } else {
+      showMessage(result.error || 'Failed to delete review', 'error');
+    }
+  } catch (error) {
+    showMessage('Network error. Please try again.', 'error');
+  }
+}
+
+async function handleDeleteSchedule() {
+  const popup = document.getElementById('taskDetailPopup');
+  const eventTitle = popup.dataset.eventTitle;
+  
+  if (!confirm(`Are you sure you want to delete the ENTIRE schedule for "${eventTitle}"? This will remove all review dates for this topic.`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/delete-schedule', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        topicName: eventTitle
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      closeTaskPopup();
+      // Refresh calendar
+      if (window.calendar) {
+        window.calendar.refetchEvents();
+      }
+      showMessage('Schedule deleted successfully!', 'success');
+    } else {
+      showMessage(result.error || 'Failed to delete schedule', 'error');
+    }
+  } catch (error) {
+    showMessage('Network error. Please try again.', 'error');
+  }
+}
+
+function showMessage(message, type) {
+  // Remove existing messages
+  const existing = document.querySelector('.dashboard-message');
+  if (existing) existing.remove();
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'dashboard-message';
+  messageDiv.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10002;
+    ${type === 'error' 
+      ? 'background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;'
+      : 'background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;'
+    }
+  `;
+  messageDiv.textContent = message;
+  
+  document.body.appendChild(messageDiv);
+  
+  setTimeout(() => {
+    if (messageDiv.parentNode) {
+      messageDiv.remove();
+    }
+  }, 5000);
 }
 
 function setupLogout() {

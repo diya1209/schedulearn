@@ -100,6 +100,56 @@
         </div>
     </div>
 
+    <!-- Task Detail Popup -->
+    <div id="taskDetailPopup" class="task-popup-overlay">
+        <div class="task-popup-content">
+            <div class="task-popup-header">
+                <h3 id="taskPopupTitle">Task Details</h3>
+                <button class="task-popup-close" onclick="closeTaskPopup()">&times;</button>
+            </div>
+            <div class="task-popup-body">
+                <div class="task-info">
+                    <div class="task-info-item">
+                        <span class="task-info-label">Topic:</span>
+                        <span id="taskTopicName">-</span>
+                    </div>
+                    <div class="task-info-item">
+                        <span class="task-info-label">Review Date:</span>
+                        <span id="taskReviewDate">-</span>
+                    </div>
+                    <div class="task-info-item">
+                        <span class="task-info-label">Study Period:</span>
+                        <span id="taskStudyPeriod">-</span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <h4>What would you like to do?</h4>
+                    <div class="action-buttons">
+                        <button class="btn btn-warning" id="deleteTaskBtn">
+                            <span class="btn-icon">🗑️</span>
+                            Delete This Review
+                        </button>
+                        <button class="btn btn-error" id="deleteScheduleBtn">
+                            <span class="btn-icon">❌</span>
+                            Delete Entire Schedule
+                        </button>
+                    </div>
+                    <div class="action-descriptions">
+                        <p class="action-desc">
+                            <strong>Delete This Review:</strong> Remove only this specific review date from your schedule
+                        </p>
+                        <p class="action-desc">
+                            <strong>Delete Entire Schedule:</strong> Remove all review dates for this topic
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="task-popup-footer">
+                <button class="btn btn-outline" onclick="closeTaskPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <script src="scripts/theme.js"></script>
     <script src="scripts/dashboard.js"></script>

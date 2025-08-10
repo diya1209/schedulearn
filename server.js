@@ -236,7 +236,11 @@ app.get('/api/events', requireAuth, async (req, res) => {
       allDay: true,
       backgroundColor: event.task_color || '#475569',
       borderColor: event.task_color || '#475569',
-      textColor: '#ffffff'
+      textColor: '#ffffff',
+      extendedProps: {
+        startDate: event.start_date,
+        endDate: event.end_date
+      }
     }));
     
     res.json(formattedEvents);
@@ -247,6 +251,49 @@ app.get('/api/events', requireAuth, async (req, res) => {
 
 app.get('/api/user', requireAuth, (req, res) => {
   res.json({ username: req.session.username });
+});
+
+// Delete single task (specific date)
+app.post('/api/delete-task', requireAuth, async (req, res) => {
+  const { topicName, eventDate } = req.body;
+  const userId = req.session.userId;
+  
+  try {
+    await db.run(`
+      DELETE FROM events 
+      WHERE user_id = ? AND topic_name = ? AND event_date = ?`, 
+      userId, topicName, eventDate);
+    
+    res.json({ success: true, message: 'Task deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    res.status(500).json({ error: 'Failed to delete task' });
+  }
+});
+
+// Delete entire schedule (all dates for a topic)
+app.post('/api/delete-schedule', requireAuth, async (req, res) => {
+  const { topicName } = req.body;
+  const userId = req.session.userId;
+  
+  try {
+    // Delete all events for this topic
+    await db.run(`
+      DELETE FROM events 
+      WHERE user_id = ? AND topic_name = ?`, 
+      userId, topicName);
+    
+    // Delete the task itself
+    await db.run(`
+      DELETE FROM tasks 
+      WHERE user_id = ? AND topic_name = ?`, 
+      userId, topicName);
+    
+    res.json({ success: true, message: 'Schedule deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+    res.status(500).json({ error: 'Failed to delete schedule' });
+  }
 });
 
 // Start server after database initialization
