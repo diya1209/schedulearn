@@ -84,6 +84,10 @@ const requireAuth = (req, res, next) => {
   if (req.session.userId) {
     next();
   } else {
+    // Check if this is an API request
+    if (req.path.startsWith('/api/')) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
     res.redirect('/login');
   }
 };

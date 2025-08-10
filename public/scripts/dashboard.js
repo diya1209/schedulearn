@@ -176,6 +176,23 @@ async function handleDeleteTask() {
       body: JSON.stringify(requestBody)
     });
     
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Authentication required - redirect to login
+        window.location.href = '/login';
+        return;
+      }
+      
+      // Try to parse error message from JSON response
+      try {
+        const errorResult = await response.json();
+        showMessage(errorResult.error || 'Failed to delete review', 'error');
+      } catch (parseError) {
+        showMessage('Failed to delete review', 'error');
+      }
+      return;
+    }
+    
     const result = await response.json();
     console.log('Delete task response:', result);
     
@@ -191,7 +208,7 @@ async function handleDeleteTask() {
     }
   } catch (error) {
     console.error('Delete task error:', error);
-    showMessage(`Network error: ${error.message}. Please try again.`, 'error');
+    showMessage('Network error. Please try again.', 'error');
   }
 }
 
@@ -216,6 +233,23 @@ async function handleDeleteSchedule() {
       })
     });
     
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Authentication required - redirect to login
+        window.location.href = '/login';
+        return;
+      }
+      
+      // Try to parse error message from JSON response
+      try {
+        const errorResult = await response.json();
+        showMessage(errorResult.error || 'Failed to delete schedule', 'error');
+      } catch (parseError) {
+        showMessage('Failed to delete schedule', 'error');
+      }
+      return;
+    }
+    
     const result = await response.json();
     console.log('Delete schedule response:', result);
     
@@ -231,7 +265,7 @@ async function handleDeleteSchedule() {
     }
   } catch (error) {
     console.error('Delete schedule error:', error);
-    showMessage(`Network error: ${error.message}. Please try again.`, 'error');
+    showMessage('Network error. Please try again.', 'error');
   }
 }
 
