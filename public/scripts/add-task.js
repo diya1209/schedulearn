@@ -64,69 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Preview schedule calculation
-  const previewSchedule = () => {
-    const familiarity = parseInt(document.getElementById('familiarity').value) ;
-    const difficulty = parseInt(document.getElementById('difficulty').value) ;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    if (startDate && endDate) {
-      const EF = Math.max((difficulty + familiarity) / 2, 1.5);
-      const daysDiff = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
-      
-      let reviewCount = 1;
-      let interval = 1;
-      let totalDays = 0;
-      
-      while (totalDays < daysDiff && reviewCount < 20) {
-        const nextInterval = Math.round(EF * interval);
-        totalDays += nextInterval;
-        if (totalDays <= daysDiff) {
-          reviewCount++;
-          interval = nextInterval;
-        } else {
-          break;
-        }
-      }
-      
-      updatePreview(reviewCount, EF.toFixed(1));
-    }
-  };
-  
-  // Add event listeners for preview
-  ['familiarity', 'difficulty', 'startDate', 'endDate'].forEach(id => {
-    document.getElementById(id).addEventListener('change', previewSchedule);
-  });
-  
-  function updatePreview(reviewCount, easinessFactor) {
-    let previewDiv = document.querySelector('.schedule-preview');
-    if (!previewDiv) {
-      previewDiv = document.createElement('div');
-      previewDiv.className = 'schedule-preview';
-      previewDiv.style.cssText = `
-        background: var(--bg-tertiary);
-        padding: 16px;
-        border-radius: 8px;
-        margin-top: 16px;
-        border: 1px solid var(--border-color);
-      `;
-      const formActions = document.querySelector('.form-actions');
-      const form = document.getElementById('addTaskForm');
-      if (formActions && form) {
-        form.insertBefore(previewDiv, formActions);
-      }
-    }
-    
-    previewDiv.innerHTML = `
-      <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">Schedule Preview</h4>
-      <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
-        📅 Estimated ${reviewCount} review sessions<br>
-        🧠 Easiness Factor: ${easinessFactor}<br>
-        ⏱️ Intervals will increase based on your ratings
-      </p>
-    `;
-  }
 });
 
 function showError(message) {
