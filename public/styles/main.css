@@ -903,7 +903,8 @@ p {
 .form-actions .btn {
   padding: var(--spacing-md) var(--spacing-2xl);
   font-size: 1rem;
-  min-width: 100px;
+  min-width: 80px;
+  padding: var(--spacing-md) var(--spacing-lg);
 }
 
 .info-section {
