@@ -33,7 +33,7 @@ function initializeCalendar() {
     headerToolbar: {
       left: 'prev,next',
       center: 'title',
-      right: 'Today'
+      right: 'today'
     },
     titleFormat: { month: 'long' },
     events: '/api/events',
