@@ -557,6 +557,12 @@ p {
   min-height: 80px;
 }
 
+/* Specific styling for the main topic label */
+.form-group label[for="topicName"] {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
 /* Password Input Container */
 .password-input-container {
   position: relative;
