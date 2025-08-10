@@ -224,12 +224,13 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
 app.get('/api/events', requireAuth, async (req, res) => {
   try {
     const events = await db.all(`
-      SELECT topic_name, event_date, start_date, end_date, task_color
+      SELECT id, topic_name, event_date, start_date, end_date, task_color
       FROM events
       WHERE user_id = ?
       ORDER BY event_date`, req.session.userId);
     
     const formattedEvents = events.map(event => ({
+      id: event.id,
       title: event.topic_name,
       start: event.event_date,
       end: event.event_date,
@@ -238,6 +239,7 @@ app.get('/api/events', requireAuth, async (req, res) => {
       borderColor: event.task_color || '#475569',
       textColor: '#ffffff',
       extendedProps: {
+        eventId: event.id,
         startDate: event.start_date,
         endDate: event.end_date
       }
@@ -245,6 +247,7 @@ app.get('/api/events', requireAuth, async (req, res) => {
     
     res.json(formattedEvents);
   } catch (error) {
+    console.error('Error fetching events:', error);
     res.status(500).json({ error: 'Failed to fetch events' });
   }
 });
@@ -255,14 +258,27 @@ app.get('/api/user', requireAuth, (req, res) => {
 
 // Delete single task (specific date)
 app.post('/api/delete-task', requireAuth, async (req, res) => {
-  const { topicName, eventDate } = req.body;
+  const { eventId, topicName, eventDate } = req.body;
   const userId = req.session.userId;
   
   try {
-    await db.run(`
-      DELETE FROM events 
-      WHERE user_id = ? AND topic_name = ? AND event_date = ?`, 
-      userId, topicName, eventDate);
+    // Use eventId if provided, otherwise fall back to topic name and date
+    let result;
+    if (eventId) {
+      result = await db.run(`
+        DELETE FROM events 
+        WHERE id = ? AND user_id = ?`, 
+        eventId, userId);
+    } else {
+      result = await db.run(`
+        DELETE FROM events 
+        WHERE user_id = ? AND topic_name = ? AND event_date = ?`, 
+        userId, topicName, eventDate);
+    }
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
     
     res.json({ success: true, message: 'Task deleted successfully' });
   } catch (error) {
@@ -277,14 +293,63 @@ app.post('/api/delete-schedule', requireAuth, async (req, res) => {
   const userId = req.session.userId;
   
   try {
+    // First, get the task_id to delete from tasks table as well
+    const taskInfo = await db.get(`
+      SELECT DISTINCT task_id FROM events 
+      WHERE user_id = ? AND topic_name = ?`, 
+      userId, topicName);
+    
     // Delete all events for this topic
-    await db.run(`
+    const eventsResult = await db.run(`
       DELETE FROM events 
       WHERE user_id = ? AND topic_name = ?`, 
       userId, topicName);
     
-    // Delete the task itself
-    await db.run(`
+    // Delete the task itself if we found a task_id
+    let tasksResult = { changes: 0 };
+    if (taskInfo && taskInfo.task_id) {
+      tasksResult = await db.run(`
+        DELETE FROM tasks 
+        WHERE id = ? AND user_id = ?`, 
+        taskInfo.task_id, userId);
+    } else {
+      // Fallback: delete by topic name
+      tasksResult = await db.run(`
+        DELETE FROM tasks 
+        WHERE user_id = ? AND topic_name = ?`, 
+        userId, topicName);
+    }
+    
+    if (eventsResult.changes === 0 && tasksResult.changes === 0) {
+      return res.status(404).json({ error: 'Schedule not found' });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Schedule deleted successfully',
+      eventsDeleted: eventsResult.changes,
+      tasksDeleted: tasksResult.changes
+    });
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+    res.status(500).json({ error: 'Failed to delete schedule' });
+  }
+});
+
+// Add a debug endpoint to check database state
+app.get('/api/debug/events', requireAuth, async (req, res) => {
+  try {
+    const events = await db.all(`
+      SELECT * FROM events WHERE user_id = ?`, req.session.userId);
+    const tasks = await db.all(`
+      SELECT * FROM tasks WHERE user_id = ?`, req.session.userId);
+    
+    res.json({ events, tasks });
+  } catch (error) {
+    console.error('Debug error:', error);
+    res.status(500).json({ error: 'Debug failed' });
+  }
+});
       DELETE FROM tasks 
       WHERE user_id = ? AND topic_name = ?`, 
       userId, topicName);

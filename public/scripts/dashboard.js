@@ -105,10 +105,17 @@ function showTaskDetailPopup(event) {
   document.getElementById('taskStudyPeriod').textContent = `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`;
   
   // Store event data for delete operations
+  popup.dataset.eventId = event.extendedProps?.eventId || event.id || '';
   popup.dataset.eventTitle = event.title;
   popup.dataset.eventDate = event.start.toISOString().split('T')[0];
   popup.dataset.startDate = startDate;
   popup.dataset.endDate = endDate;
+  
+  console.log('Event data stored:', {
+    eventId: popup.dataset.eventId,
+    title: popup.dataset.eventTitle,
+    date: popup.dataset.eventDate
+  });
   
   // Setup delete button handlers
   setupDeleteHandlers();
@@ -140,6 +147,7 @@ function setupDeleteHandlers() {
 
 async function handleDeleteTask() {
   const popup = document.getElementById('taskDetailPopup');
+  const eventId = popup.dataset.eventId;
   const eventTitle = popup.dataset.eventTitle;
   const eventDate = popup.dataset.eventDate;
   
@@ -148,18 +156,28 @@ async function handleDeleteTask() {
   }
   
   try {
+    const requestBody = {
+      topicName: eventTitle,
+      eventDate: eventDate
+    };
+    
+    // Include eventId if available for more precise deletion
+    if (eventId) {
+      requestBody.eventId = parseInt(eventId);
+    }
+    
+    console.log('Deleting task with data:', requestBody);
+    
     const response = await fetch('/api/delete-task', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        topicName: eventTitle,
-        eventDate: eventDate
-      })
+      body: JSON.stringify(requestBody)
     });
     
     const result = await response.json();
+    console.log('Delete task response:', result);
     
     if (result.success) {
       closeTaskPopup();
@@ -172,7 +190,8 @@ async function handleDeleteTask() {
       showMessage(result.error || 'Failed to delete review', 'error');
     }
   } catch (error) {
-    showMessage('Network error. Please try again.', 'error');
+    console.error('Delete task error:', error);
+    showMessage(`Network error: ${error.message}. Please try again.`, 'error');
   }
 }
 
@@ -185,6 +204,8 @@ async function handleDeleteSchedule() {
   }
   
   try {
+    console.log('Deleting schedule for topic:', eventTitle);
+    
     const response = await fetch('/api/delete-schedule', {
       method: 'POST',
       headers: {
@@ -196,6 +217,7 @@ async function handleDeleteSchedule() {
     });
     
     const result = await response.json();
+    console.log('Delete schedule response:', result);
     
     if (result.success) {
       closeTaskPopup();
@@ -208,7 +230,8 @@ async function handleDeleteSchedule() {
       showMessage(result.error || 'Failed to delete schedule', 'error');
     }
   } catch (error) {
-    showMessage('Network error. Please try again.', 'error');
+    console.error('Delete schedule error:', error);
+    showMessage(`Network error: ${error.message}. Please try again.`, 'error');
   }
 }
 
