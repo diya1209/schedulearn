@@ -950,15 +950,25 @@ p {
 }
 
 .fc-daygrid-day-frame {
-  min-height: auto !important;
+  min-height: 60px !important;
+  padding-bottom: 8px !important;
 }
 
 .fc-daygrid-day-events {
-  margin-bottom: 0 !important;
+  margin-bottom: 12px !important;
+  padding-bottom: 8px !important;
 }
 
 .fc-daygrid-event-harness {
-  margin-bottom: 2px !important;
+  margin-bottom: 4px !important;
+}
+
+.fc-daygrid-day-top {
+  padding-bottom: 4px !important;
+}
+
+.fc-daygrid-day {
+  padding-bottom: 8px !important;
 }
 
 .fc-event {
