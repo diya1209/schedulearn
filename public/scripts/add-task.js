@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Preview schedule calculation
   const previewSchedule = () => {
-    const familiarity = parseInt(document.getElementById('familiarity').value) || 3;
-    const difficulty = parseInt(document.getElementById('difficulty').value) || 3;
+    const familiarity = parseInt(document.getElementById('familiarity').value) ;
+    const difficulty = parseInt(document.getElementById('difficulty').value) ;
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     
