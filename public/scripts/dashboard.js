@@ -151,9 +151,17 @@ async function handleDeleteTask() {
   const eventTitle = popup.dataset.eventTitle;
   const eventDate = popup.dataset.eventDate;
   
+  console.log('=== DELETE TASK DEBUG ===');
+  console.log('Event ID:', eventId);
+  console.log('Event Title:', eventTitle);
+  console.log('Event Date:', eventDate);
+  
   if (!confirm(`Are you sure you want to delete the review for "${eventTitle}" on ${new Date(eventDate).toLocaleDateString()}?`)) {
+    console.log('User cancelled delete task operation');
     return;
   }
+  
+  console.log('User confirmed delete task operation');
   
   try {
     const requestBody = {
@@ -166,7 +174,8 @@ async function handleDeleteTask() {
       requestBody.eventId = parseInt(eventId);
     }
     
-    console.log('Deleting task with data:', requestBody);
+    console.log('Request body being sent:', requestBody);
+    console.log('Making DELETE request to /api/delete-task...');
     
     const response = await fetch('/api/delete-task', {
       method: 'POST',
@@ -176,9 +185,13 @@ async function handleDeleteTask() {
       body: JSON.stringify(requestBody)
     });
     
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
     if (!response.ok) {
       if (response.status === 401) {
         // Authentication required - redirect to login
+        console.log('Authentication required - redirecting to login');
         window.location.href = '/login';
         return;
       }
@@ -186,17 +199,20 @@ async function handleDeleteTask() {
       // Try to parse error message from JSON response
       try {
         const errorResult = await response.json();
+        console.log('Error response from server:', errorResult);
         showMessage(errorResult.error || 'Failed to delete review', 'error');
       } catch (parseError) {
+        console.log('Failed to parse error response:', parseError);
         showMessage('Failed to delete review', 'error');
       }
       return;
     }
     
     const result = await response.json();
-    console.log('Delete task response:', result);
+    console.log('Success response from server:', result);
     
     if (result.success) {
+      console.log('Task deleted successfully, closing popup and refreshing calendar');
       closeTaskPopup();
       // Refresh calendar
       if (window.calendar) {
@@ -204,10 +220,11 @@ async function handleDeleteTask() {
       }
       showMessage('Review deleted successfully!', 'success');
     } else {
+      console.log('Server returned success=false:', result);
       showMessage(result.error || 'Failed to delete review', 'error');
     }
   } catch (error) {
-    console.error('Delete task error:', error);
+    console.error('Network/JavaScript error during delete task:', error);
     showMessage('Network error. Please try again.', 'error');
   }
 }
@@ -216,26 +233,36 @@ async function handleDeleteSchedule() {
   const popup = document.getElementById('taskDetailPopup');
   const eventTitle = popup.dataset.eventTitle;
   
+  console.log('=== DELETE SCHEDULE DEBUG ===');
+  console.log('Event Title:', eventTitle);
+  
   if (!confirm(`Are you sure you want to delete the ENTIRE schedule for "${eventTitle}"? This will remove all review dates for this topic.`)) {
+    console.log('User cancelled delete schedule operation');
     return;
   }
   
+  console.log('User confirmed delete schedule operation');
+  
   try {
-    console.log('Deleting schedule for topic:', eventTitle);
+    const requestBody = { topicName: eventTitle };
+    console.log('Request body being sent:', requestBody);
+    console.log('Making DELETE request to /api/delete-schedule...');
     
     const response = await fetch('/api/delete-schedule', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        topicName: eventTitle
-      })
+      body: JSON.stringify(requestBody)
     });
+    
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
     
     if (!response.ok) {
       if (response.status === 401) {
         // Authentication required - redirect to login
+        console.log('Authentication required - redirecting to login');
         window.location.href = '/login';
         return;
       }
@@ -243,17 +270,20 @@ async function handleDeleteSchedule() {
       // Try to parse error message from JSON response
       try {
         const errorResult = await response.json();
+        console.log('Error response from server:', errorResult);
         showMessage(errorResult.error || 'Failed to delete schedule', 'error');
       } catch (parseError) {
+        console.log('Failed to parse error response:', parseError);
         showMessage('Failed to delete schedule', 'error');
       }
       return;
     }
     
     const result = await response.json();
-    console.log('Delete schedule response:', result);
+    console.log('Success response from server:', result);
     
     if (result.success) {
+      console.log('Schedule deleted successfully, closing popup and refreshing calendar');
       closeTaskPopup();
       // Refresh calendar
       if (window.calendar) {
@@ -261,10 +291,11 @@ async function handleDeleteSchedule() {
       }
       showMessage('Schedule deleted successfully!', 'success');
     } else {
+      console.log('Server returned success=false:', result);
       showMessage(result.error || 'Failed to delete schedule', 'error');
     }
   } catch (error) {
-    console.error('Delete schedule error:', error);
+    console.error('Network/JavaScript error during delete schedule:', error);
     showMessage('Network error. Please try again.', 'error');
   }
 }

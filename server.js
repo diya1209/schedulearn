@@ -265,28 +265,42 @@ app.post('/api/delete-task', requireAuth, async (req, res) => {
   const { eventId, topicName, eventDate } = req.body;
   const userId = req.session.userId;
   
+  console.log('=== DELETE TASK SERVER DEBUG ===');
+  console.log('User ID:', userId);
+  console.log('Event ID:', eventId);
+  console.log('Topic Name:', topicName);
+  console.log('Event Date:', eventDate);
+  
   try {
     // Use eventId if provided, otherwise fall back to topic name and date
     let result;
     if (eventId) {
+      console.log('Attempting to delete by event ID...');
       result = await db.run(`
         DELETE FROM events 
         WHERE id = ? AND user_id = ?`, 
         eventId, userId);
+      console.log('Delete by ID result:', result);
     } else {
+      console.log('Attempting to delete by topic name and date...');
       result = await db.run(`
         DELETE FROM events 
         WHERE user_id = ? AND topic_name = ? AND event_date = ?`, 
         userId, topicName, eventDate);
+      console.log('Delete by topic/date result:', result);
     }
     
+    console.log('Changes made:', result.changes);
+    
     if (result.changes === 0) {
+      console.log('No records were deleted - task not found');
       return res.status(404).json({ error: 'Task not found' });
     }
     
+    console.log('Task deleted successfully');
     res.json({ success: true, message: 'Task deleted successfully' });
   } catch (error) {
-    console.error('Error deleting task:', error);
+    console.error('Database error during task deletion:', error);
     res.status(500).json({ error: 'Failed to delete task' });
   }
 });
@@ -296,38 +310,54 @@ app.post('/api/delete-schedule', requireAuth, async (req, res) => {
   const { topicName } = req.body;
   const userId = req.session.userId;
   
+  console.log('=== DELETE SCHEDULE SERVER DEBUG ===');
+  console.log('User ID:', userId);
+  console.log('Topic Name:', topicName);
+  
   try {
     // First, get the task_id to delete from tasks table as well
+    console.log('Looking for task_id for this topic...');
     const taskInfo = await db.get(`
       SELECT DISTINCT task_id FROM events 
       WHERE user_id = ? AND topic_name = ?`, 
       userId, topicName);
+    console.log('Task info found:', taskInfo);
     
     // Delete all events for this topic
+    console.log('Deleting all events for this topic...');
     const eventsResult = await db.run(`
       DELETE FROM events 
       WHERE user_id = ? AND topic_name = ?`, 
       userId, topicName);
+    console.log('Events deletion result:', eventsResult);
     
     // Delete the task itself if we found a task_id
     let tasksResult = { changes: 0 };
     if (taskInfo && taskInfo.task_id) {
+      console.log('Deleting task by task_id:', taskInfo.task_id);
       tasksResult = await db.run(`
         DELETE FROM tasks 
         WHERE id = ? AND user_id = ?`, 
         taskInfo.task_id, userId);
+      console.log('Tasks deletion by ID result:', tasksResult);
     } else {
       // Fallback: delete by topic name
+      console.log('Fallback: deleting task by topic name...');
       tasksResult = await db.run(`
         DELETE FROM tasks 
         WHERE user_id = ? AND topic_name = ?`, 
         userId, topicName);
+      console.log('Tasks deletion by name result:', tasksResult);
     }
     
+    console.log('Total changes - Events:', eventsResult.changes, 'Tasks:', tasksResult.changes);
+    
     if (eventsResult.changes === 0 && tasksResult.changes === 0) {
+      console.log('No records were deleted - schedule not found');
       return res.status(404).json({ error: 'Schedule not found' });
     }
     
+    console.log('Schedule deleted successfully');
     res.json({ 
       success: true, 
       message: 'Schedule deleted successfully',
@@ -335,7 +365,7 @@ app.post('/api/delete-schedule', requireAuth, async (req, res) => {
       tasksDeleted: tasksResult.changes
     });
   } catch (error) {
-    console.error('Error deleting schedule:', error);
+    console.error('Database error during schedule deletion:', error);
     res.status(500).json({ error: 'Failed to delete schedule' });
   }
 });
