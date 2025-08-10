@@ -140,6 +140,7 @@ p {
 .btn-small {
   padding: var(--spacing-xs) var(--spacing-md);
   font-size: 0.75rem;
+  min-height: 36px;
 }
 
 .btn-large {
