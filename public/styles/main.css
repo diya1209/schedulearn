@@ -1116,14 +1116,15 @@ p {
   background: var(--gradient-primary);
   color: white;
   border: none;
-  padding: var(--spacing-md) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
   box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.3);
-  min-width: 100px;
+  min-width: 80px;
+  margin-top: var(--spacing-md);
 }
 
 .popup-button:hover {
