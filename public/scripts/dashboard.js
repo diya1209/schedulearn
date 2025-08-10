@@ -68,7 +68,9 @@ function initializeCalendar() {
     titleFormat: { month: 'long' },
     events: '/api/events',
     eventDisplay: 'block',
-    dayMaxEvents: 3,
+    dayMaxEvents: false,
+    moreLinkClick: 'popover',
+    height: 'auto',
     eventClick: function(info) {
       // Show event details
       showEventDetails(info.event);

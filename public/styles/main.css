@@ -949,6 +949,18 @@ p {
   background: var(--bg-tertiary);
 }
 
+.fc-daygrid-day-frame {
+  min-height: auto !important;
+}
+
+.fc-daygrid-day-events {
+  margin-bottom: 0 !important;
+}
+
+.fc-daygrid-event-harness {
+  margin-bottom: 2px !important;
+}
+
 .fc-event {
   background: var(--event-color, rgba(71, 85, 105, 0.8)) !important;
   border: none !important;
@@ -956,6 +968,8 @@ p {
   font-weight: 500 !important;
   color: #e2e8f0 !important;
   opacity: 0.9 !important;
+  font-size: 0.75rem !important;
+  padding: 1px 4px !important;
 }
 
 .fc-button-primary {
