@@ -235,7 +235,8 @@ app.get('/api/events', requireAuth, async (req, res) => {
       end: event.event_date,
       allDay: true,
       backgroundColor: event.task_color || '#475569',
-      borderColor: event.task_color || '#475569'
+      borderColor: event.task_color || '#475569',
+      textColor: '#ffffff'
     }));
     
     res.json(formattedEvents);

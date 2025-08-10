@@ -972,14 +972,19 @@ p {
 }
 
 .fc-event {
-  background: var(--event-color, rgba(71, 85, 105, 0.8)) !important;
   border: none !important;
   border-radius: var(--radius-sm) !important;
   font-weight: 500 !important;
-  color: #e2e8f0 !important;
+  color: #ffffff !important;
   opacity: 0.9 !important;
   font-size: 0.75rem !important;
   padding: 1px 4px !important;
+}
+
+.fc-event:hover {
+  opacity: 1 !important;
+  transform: translateY(-1px) !important;
+  transition: all 0.2s ease !important;
 }
 
 .fc-button-primary {
