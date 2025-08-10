@@ -111,7 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
         margin-top: 16px;
         border: 1px solid var(--border-color);
       `;
-      document.querySelector('.form-section:last-of-type').appendChild(previewDiv);
+      const formActions = document.querySelector('.form-actions');
+      const form = document.getElementById('addTaskForm');
+      if (formActions && form) {
+        form.insertBefore(previewDiv, formActions);
+      }
     }
     
     previewDiv.innerHTML = `
