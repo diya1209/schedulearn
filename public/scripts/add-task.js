@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (result.success) {
         showSuccess('Schedule created successfully!');
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.href = '/dashboard?success=schedule-created';
         }, 1500);
       } else {
         showError(result.error || 'Failed to create schedule');

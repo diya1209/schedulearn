@@ -1,5 +1,8 @@
 // Dashboard functionality
 document.addEventListener('DOMContentLoaded', async () => {
+  // Check for success message from URL params
+  checkForSuccessMessage();
+  
   // Load user info
   await loadUserInfo();
   
@@ -12,6 +15,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load stats
   await loadStats();
 });
+
+function checkForSuccessMessage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === 'schedule-created') {
+    showSuccessPopup();
+    // Clean up URL without reloading page
+    const newUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+}
+
+function showSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  if (popup) {
+    popup.classList.add('show');
+  }
+}
+
+function closeSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  if (popup) {
+    popup.classList.remove('show');
+  }
+}
+
+// Make closeSuccessPopup available globally
+window.closeSuccessPopup = closeSuccessPopup;
 
 async function loadUserInfo() {
   try {
