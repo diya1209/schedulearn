@@ -43,6 +43,8 @@ function closeSuccessPopup() {
 // Make closeSuccessPopup available globally
 window.closeSuccessPopup = closeSuccessPopup;
 window.closeTaskPopup = closeTaskPopup;
+window.showCustomConfirm = showCustomConfirm;
+window.closeConfirmPopup = closeConfirmPopup;
 
 async function loadUserInfo() {
   try {
@@ -156,7 +158,13 @@ async function handleDeleteTask() {
   console.log('Event Title:', eventTitle);
   console.log('Event Date:', eventDate);
   
-  if (!confirm(`Are you sure you want to delete the review for "${eventTitle}" on ${new Date(eventDate).toLocaleDateString()}?`)) {
+  // Show custom confirmation
+  const confirmed = await showCustomConfirm(
+    'Delete This Review?',
+    `Are you sure you want to delete the review for "${eventTitle}" on ${new Date(eventDate).toLocaleDateString()}?`
+  );
+  
+  if (!confirmed) {
     console.log('User cancelled delete task operation');
     return;
   }
@@ -236,7 +244,13 @@ async function handleDeleteSchedule() {
   console.log('=== DELETE SCHEDULE DEBUG ===');
   console.log('Event Title:', eventTitle);
   
-  if (!confirm(`Are you sure you want to delete the ENTIRE schedule for "${eventTitle}"? This will remove all review dates for this topic.`)) {
+  // Show custom confirmation
+  const confirmed = await showCustomConfirm(
+    'Delete Entire Schedule?',
+    `Are you sure you want to delete the ENTIRE schedule for "${eventTitle}"? This will remove all review dates for this topic.`
+  );
+  
+  if (!confirmed) {
     console.log('User cancelled delete schedule operation');
     return;
   }
@@ -395,4 +409,54 @@ function calculateWeekStreak(events) {
   }
   
   return streak;
+}
+
+// Custom confirmation dialog
+function showCustomConfirm(title, message) {
+  return new Promise((resolve) => {
+    const popup = document.getElementById('confirmationPopup');
+    const titleEl = document.getElementById('confirmTitle');
+    const messageEl = document.getElementById('confirmMessage');
+    const cancelBtn = document.getElementById('confirmCancel');
+    const deleteBtn = document.getElementById('confirmDelete');
+    
+    // Set content
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    
+    // Show popup
+    popup.classList.add('show');
+    
+    // Handle buttons
+    const handleCancel = () => {
+      popup.classList.remove('show');
+      cancelBtn.removeEventListener('click', handleCancel);
+      deleteBtn.removeEventListener('click', handleConfirm);
+      resolve(false);
+    };
+    
+    const handleConfirm = () => {
+      popup.classList.remove('show');
+      cancelBtn.removeEventListener('click', handleCancel);
+      deleteBtn.removeEventListener('click', handleConfirm);
+      resolve(true);
+    };
+    
+    cancelBtn.addEventListener('click', handleCancel);
+    deleteBtn.addEventListener('click', handleConfirm);
+    
+    // Handle escape key
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        document.removeEventListener('keydown', handleEscape);
+        handleCancel();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+  });
+}
+
+function closeConfirmPopup() {
+  const popup = document.getElementById('confirmationPopup');
+  popup.classList.remove('show');
 }

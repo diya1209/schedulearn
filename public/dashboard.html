@@ -134,18 +134,23 @@
                             Delete Entire Schedule
                         </button>
                     </div>
-                    <div class="action-descriptions">
-                        <p class="action-desc">
-                            <strong>Delete This Review:</strong> Remove only this specific review date from your schedule
-                        </p>
-                        <p class="action-desc">
-                            <strong>Delete Entire Schedule:</strong> Remove all review dates for this topic
-                        </p>
-                    </div>
                 </div>
             </div>
             <div class="task-popup-footer">
                 <button class="btn btn-outline" onclick="closeTaskPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Popup -->
+    <div id="confirmationPopup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="popup-icon">⚠️</span>
+            <h3 class="popup-title" id="confirmTitle">Confirm Action</h3>
+            <p class="popup-message" id="confirmMessage">Are you sure you want to proceed?</p>
+            <div class="popup-actions">
+                <button class="btn btn-outline" id="confirmCancel">Cancel</button>
+                <button class="btn btn-error" id="confirmDelete">Delete</button>
             </div>
         </div>
     </div>

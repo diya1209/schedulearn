@@ -1249,6 +1249,18 @@ p {
   justify-content: flex-end;
 }
 
+.popup-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+}
+
+.popup-actions .btn {
+  min-width: 80px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+}
+
 .popup-icon {
   font-size: 2rem;
   margin-bottom: var(--spacing-lg);
