@@ -52,6 +52,7 @@ await db.exec(`
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     task_color TEXT DEFAULT '#4f46e5',
+    completed BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (task_id) REFERENCES tasks (id)
@@ -228,7 +229,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
 app.get('/api/events', requireAuth, async (req, res) => {
   try {
     const events = await db.all(`
-      SELECT id, topic_name, event_date, start_date, end_date, task_color
+      SELECT id, topic_name, event_date, start_date, end_date, task_color, completed
       FROM events
       WHERE user_id = ?
       ORDER BY event_date`, req.session.userId);
@@ -242,10 +243,12 @@ app.get('/api/events', requireAuth, async (req, res) => {
       backgroundColor: event.task_color || '#475569',
       borderColor: event.task_color || '#475569',
       textColor: '#ffffff',
+      className: event.completed ? 'completed' : '',
       extendedProps: {
         eventId: event.id,
         startDate: event.start_date,
-        endDate: event.end_date
+        endDate: event.end_date,
+        completed: event.completed
       }
     }));
     

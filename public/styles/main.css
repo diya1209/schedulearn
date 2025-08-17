@@ -1231,10 +1231,56 @@ p {
   transform: translateY(-2px);
 }
 
+.btn-success {
+  background: var(--success-color);
+  color: white;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+/* Completed task styling */
+.fc-event.completed {
+  background-color: #9ca3af !important;
+  border-color: #9ca3af !important;
+  opacity: 0.7 !important;
+  text-decoration: line-through !important;
+}
+
+.fc-event.completed:hover {
+  opacity: 0.8 !important;
+}
+
+/* Task status indicator */
+.task-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: var(--spacing-sm);
+}
+
+.task-status.completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.task-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .action-descriptions {
   background: var(--bg-tertiary);
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
 }
 
 .action-desc {

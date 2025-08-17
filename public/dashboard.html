@@ -125,6 +125,10 @@
                 <div class="task-actions">
                     <h4>What would you like to do?</h4>
                     <div class="action-buttons">
+                        <button class="btn btn-success" id="completeTaskBtn">
+                            <span class="btn-icon">✅</span>
+                            Mark as Completed
+                        </button>
                         <button class="btn btn-warning" id="deleteTaskBtn">
                             <span class="btn-icon">🗑️</span>
                             Delete This Review
@@ -133,6 +137,17 @@
                             <span class="btn-icon">❌</span>
                             Delete Entire Schedule
                         </button>
+                    </div>
+                    <div class="action-descriptions">
+                        <div class="action-desc">
+                            <strong>✅ Mark as Completed:</strong> Mark this review as studied. The task will turn grey to show completion.
+                        </div>
+                        <div class="action-desc">
+                            <strong>🗑️ Delete This Review:</strong> Remove only this specific review date from your schedule.
+                        </div>
+                        <div class="action-desc">
+                            <strong>❌ Delete Entire Schedule:</strong> Remove all review dates for this topic permanently.
+                        </div>
                     </div>
                 </div>
             </div>
