@@ -74,21 +74,13 @@ function initializeCalendar() {
     dayMaxEvents: false,
     moreLinkClick: 'popover',
     height: 'auto',
-    editable: false, // We'll control this programmatically
     eventClick: function(info) {
-      if (window.moveMode) {
-        // In move mode, store the event to be moved
-        window.eventToMove = info.event;
-      } else {
-        // Normal mode - show event details
-        showTaskDetailPopup(info.event);
-      }
+      // Show event details
+      showTaskDetailPopup(info.event);
     },
     dateClick: function(info) {
-      if (window.moveMode && window.eventToMove) {
-        // Move the selected event to this date
-        moveEventToDate(window.eventToMove, info.dateStr);
-      }
+      // Handle date click - could add quick task creation
+      console.log('Date clicked:', info.dateStr);
     },
     eventDidMount: function(info) {
       // Add tooltip or additional styling
@@ -135,19 +127,16 @@ function closeTaskPopup() {
 
 function setupTaskActionHandlers() {
   const completeTaskBtn = document.getElementById('completeTaskBtn');
-  const moveTaskBtn = document.getElementById('moveTaskBtn');
   const deleteTaskBtn = document.getElementById('deleteTaskBtn');
   const deleteScheduleBtn = document.getElementById('deleteScheduleBtn');
   
   // Remove existing listeners
   completeTaskBtn.replaceWith(completeTaskBtn.cloneNode(true));
-  moveTaskBtn.replaceWith(moveTaskBtn.cloneNode(true));
   deleteTaskBtn.replaceWith(deleteTaskBtn.cloneNode(true));
   deleteScheduleBtn.replaceWith(deleteScheduleBtn.cloneNode(true));
   
   // Get new references
   const newCompleteTaskBtn = document.getElementById('completeTaskBtn');
-  const newMoveTaskBtn = document.getElementById('moveTaskBtn');
   const newDeleteTaskBtn = document.getElementById('deleteTaskBtn');
   const newDeleteScheduleBtn = document.getElementById('deleteScheduleBtn');
   
@@ -164,7 +153,6 @@ function setupTaskActionHandlers() {
     newCompleteTaskBtn.addEventListener('click', handleCompleteTask);
   }
   
-  newMoveTaskBtn.addEventListener('click', handleMoveTask);
   newDeleteTaskBtn.addEventListener('click', handleDeleteTask);
   newDeleteScheduleBtn.addEventListener('click', handleDeleteSchedule);
 }
@@ -257,144 +245,6 @@ async function handleCompleteTask() {
     showMessage('Network error. Please try again.', 'error');
   }
 }
-
-async function handleMoveTask() {
-  const popup = document.getElementById('taskDetailPopup');
-  const eventId = popup.dataset.eventId;
-  const eventTitle = popup.dataset.eventTitle;
-  const eventDate = popup.dataset.eventDate;
-  
-  console.log('=== MOVE TASK DEBUG ===');
-  console.log('Event ID:', eventId);
-  console.log('Event Title:', eventTitle);
-  console.log('Event Date:', eventDate);
-  
-  // Close the popup
-  closeTaskPopup();
-  
-  // Enter move mode
-  enterMoveMode(eventId, eventTitle, eventDate);
-}
-
-function enterMoveMode(eventId, eventTitle, eventDate) {
-  // Set global move mode variables
-  window.moveMode = true;
-  window.moveEventData = { eventId, eventTitle, eventDate };
-  
-  // Add visual styling for move mode
-  document.body.classList.add('move-mode');
-  
-  // Show instruction overlay
-  const instruction = document.createElement('div');
-  instruction.className = 'move-instruction';
-  instruction.innerHTML = `
-    📅 Click on any date to move "${eventTitle}" there
-    <button onclick="exitMoveMode()" style="margin-left: 15px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Cancel</button>
-  `;
-  document.body.appendChild(instruction);
-  
-  // Store instruction element for cleanup
-  window.moveInstruction = instruction;
-}
-
-function exitMoveMode() {
-  // Reset move mode
-  window.moveMode = false;
-  window.eventToMove = null;
-  window.moveEventData = null;
-  
-  // Remove visual styling
-  document.body.classList.remove('move-mode');
-  
-  // Remove instruction overlay
-  if (window.moveInstruction) {
-    window.moveInstruction.remove();
-    window.moveInstruction = null;
-  }
-}
-
-async function moveEventToDate(event, newDate) {
-  const { eventId, eventTitle, eventDate } = window.moveEventData;
-  
-  console.log('=== MOVE EVENT TO DATE DEBUG ===');
-  console.log('Moving to date:', newDate);
-  console.log('Event data:', window.moveEventData);
-  
-  // Show confirmation
-  const confirmed = await showCustomConfirm(
-    'Move Task?',
-    `Move "${eventTitle}" from ${new Date(eventDate).toLocaleDateString()} to ${new Date(newDate).toLocaleDateString()}?`
-  );
-  
-  if (!confirmed) {
-    console.log('User cancelled move operation');
-    exitMoveMode();
-    return;
-  }
-  
-  try {
-    const requestBody = {
-      topicName: eventTitle,
-      oldDate: eventDate,
-      newDate: newDate
-    };
-    
-    // Include eventId if available for more precise moving
-    if (eventId) {
-      requestBody.eventId = parseInt(eventId);
-    }
-    
-    console.log('Request body being sent:', requestBody);
-    
-    const response = await fetch('/api/move-task', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    });
-    
-    if (!response.ok) {
-      if (response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
-      
-      try {
-        const errorResult = await response.json();
-        showMessage(errorResult.error || 'Failed to move task', 'error');
-      } catch (parseError) {
-        showMessage('Failed to move task', 'error');
-      }
-      exitMoveMode();
-      return;
-    }
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      // Exit move mode
-      exitMoveMode();
-      
-      // Refresh calendar to show moved task
-      if (window.calendar) {
-        window.calendar.refetchEvents();
-      }
-      
-      showMessage(`📅 Task moved to ${new Date(newDate).toLocaleDateString()} successfully!`, 'success');
-    } else {
-      showMessage(result.error || 'Failed to move task', 'error');
-      exitMoveMode();
-    }
-  } catch (error) {
-    console.error('Network/JavaScript error during move task:', error);
-    showMessage('Network error. Please try again.', 'error');
-    exitMoveMode();
-  }
-}
-
-// Make exitMoveMode available globally
-window.exitMoveMode = exitMoveMode;
 
 async function handleDeleteTask() {
   const popup = document.getElementById('taskDetailPopup');
