@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showError(result.error || 'Failed to create schedule');
       }
     } catch (error) {
-      showError('Network error. Please try again.');
+      showError('Failed to create schedule. Please try again.');
     } finally {
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
