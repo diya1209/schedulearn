@@ -114,7 +114,7 @@ function showTaskDetailPopup(event) {
   });
   
   // Setup delete button handlers
-  setupDeleteHandlers();
+  setupTaskActionHandlers();
   
   // Show popup
   popup.classList.add('show');
