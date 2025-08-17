@@ -529,6 +529,53 @@ app.post('/api/delete-schedule', requireAuth, async (req, res) => {
   }
 });
 
+// Move task to different date
+app.post('/api/move-task', requireAuth, async (req, res) => {
+  const { eventId, topicName, oldDate, newDate } = req.body;
+  const userId = req.session.userId;
+  
+  console.log('=== MOVE TASK SERVER DEBUG ===');
+  console.log('User ID:', userId);
+  console.log('Event ID:', eventId);
+  console.log('Topic Name:', topicName);
+  console.log('Old Date:', oldDate);
+  console.log('New Date:', newDate);
+  
+  try {
+    let result;
+    if (eventId) {
+      console.log('Attempting to move by event ID...');
+      result = await db.run(`
+        UPDATE events 
+        SET event_date = ? 
+        WHERE id = ? AND user_id = ?`, 
+        newDate, eventId, userId);
+      console.log('Move by ID result:', result);
+    } else {
+      console.log('Attempting to move by topic name and date...');
+      result = await db.run(`
+        UPDATE events 
+        SET event_date = ? 
+        WHERE user_id = ? AND topic_name = ? AND event_date = ?`, 
+        newDate, userId, topicName, oldDate);
+      console.log('Move by topic/date result:', result);
+    }
+    
+    console.log('Changes made:', result.changes);
+    
+    if (result.changes === 0) {
+      console.log('No records were updated - task not found');
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    
+    console.log('Task moved successfully');
+    res.json({ success: true, message: 'Task moved successfully!' });
+  } catch (error) {
+    console.error('Database error during task move:', error);
+    res.status(500).json({ error: 'Failed to move task' });
+  }
+});
+
 // Start server after database initialization
 async function startServer() {
   await initDatabase();
