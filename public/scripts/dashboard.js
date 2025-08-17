@@ -93,11 +93,11 @@ function initializeCalendar() {
       if (window.moveMode && window.eventToMove) {
         console.log('Processing move to date:', info.dateStr);
         // Move the selected event to this date
-        moveEventToDate(window.eventToMove, info.dateStr);
+        moveEventToDate(window.moveEventData, info.dateStr);
       } else {
         console.log('Move mode not active or no event data available');
         if (!window.moveMode) console.log('Move mode is false');
-        if (!window.moveEventData) console.log('Move event data is null/undefined');
+        if (!window.moveEventData) console.log('Move event data is null/undefined:', window.moveEventData);
       }
     },
     eventDidMount: function(info) {
@@ -342,7 +342,10 @@ async function moveEventToDate(moveData, newDate) {
   console.log('Move data received:', moveData);
   console.log('New date:', newDate);
   
-  const { eventId, eventTitle, eventDate } = moveData;
+  // Extract data from moveData object
+  const eventId = moveData.eventId;
+  const eventTitle = moveData.eventTitle;
+  const eventDate = moveData.eventDate;
   
   console.log('Extracted data:');
   console.log('- Event ID:', eventId);
