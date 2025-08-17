@@ -932,7 +932,9 @@ p {
   border-color: var(--border-color);
 }
 
-.fc-theme-standard td, 
+.fc-theme-standard td {
+  background-color: gray
+}
 .fc-theme-standard th {
   border-color: var(--border-color);
 }
