@@ -16,13 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     
     const formData = new FormData(form);
+    
+    // Get selected color (will be null if none selected)
+    const selectedColor = formData.get('taskColor');
+    
     const data = {
       topicName: formData.get('topicName'),
       familiarity: parseInt(formData.get('familiarity')),
       difficulty: parseInt(formData.get('difficulty')),
       startDate: formData.get('startDate'),
       endDate: formData.get('endDate'),
-      taskColor: formData.get('taskColor') || '#475569'
+      taskColor: selectedColor // Send null if no color selected, server will auto-assign
     };
     
     // Validation

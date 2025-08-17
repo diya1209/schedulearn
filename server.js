@@ -176,14 +176,36 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.post('/api/add-task', requireAuth, async (req, res) => {
-  const { topicName, familiarity, difficulty, startDate, endDate, taskColor } = req.body;
+  const { topicName, familiarity, difficulty, startDate, endDate, taskColor: userSelectedColor } = req.body;
   const userId = req.session.userId;
   
   try {
+    // Define available colors in order
+    const availableColors = [
+      '#4f46e5', // Deep Blue (default)
+      '#475569', // Dark Slate
+      '#1e3a8a', // Dark Navy
+      '#0f766e', // Dark Teal
+      '#155e75', // Dark Cyan
+      '#065f46', // Dark Emerald
+      '#581c87', // Dark Purple
+      '#3730a3'  // Dark Indigo
+    ];
+    
+    let taskColor = userSelectedColor;
+    
+    // If no color was selected by user, auto-assign the next color
+    if (!userSelectedColor) {
+      // Get count of existing tasks for this user to determine next color
+      const taskCount = await db.get('SELECT COUNT(*) as count FROM tasks WHERE user_id = ?', userId);
+      const colorIndex = taskCount.count % availableColors.length;
+      taskColor = availableColors[colorIndex];
+    }
+    
     // Insert task
     const taskResult = await db.run(`
       INSERT INTO tasks (user_id, topic_name, topic_familiarity, topic_difficulty, start_date, end_date, task_color)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate, taskColor || '#475569');
+      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, topicName, familiarity, difficulty, startDate, endDate, taskColor);
     
     const taskId = taskResult.lastID;
     
@@ -197,7 +219,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
     // Add initial event
     await db.run(`
       INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date, task_color)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate, taskColor || '#475569');
+      VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, startDate, startDate, endDate, taskColor);
     
     // Generate review schedule
     for (let i = 1; i < 100; i++) {
@@ -212,7 +234,7 @@ app.post('/api/add-task', requireAuth, async (req, res) => {
         const eventDateStr = eventDate.toISOString().split('T')[0];
         await db.run(`
           INSERT INTO events (user_id, task_id, topic_name, event_date, start_date, end_date, task_color)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate, taskColor || '#475569');
+          VALUES (?, ?, ?, ?, ?, ?, ?)`, userId, taskId, topicName, eventDateStr, startDate, endDate, taskColor);
       } else {
         break;
       }
