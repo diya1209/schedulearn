@@ -1214,6 +1214,10 @@ p {
   padding: var(--spacing-xl);
 }
 
+.task-popup-body h5:first-child {
+  font-size: 1rem;
+}
+
 .task-info {
   margin-bottom: var(--spacing-xl);
 }
