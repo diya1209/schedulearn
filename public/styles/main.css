@@ -979,6 +979,11 @@ p {
   opacity: 0.9 !important;
   font-size: 0.75rem !important;
   padding: 1px 4px !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  line-height: 1.2 !important;
+  min-height: auto !important;
 }
 
 .fc-event:hover {
