@@ -999,7 +999,7 @@ p {
 }
 
 .fc-today {
-  background: #d1d5db !important;
+  background-color: #6b7280 !important;
   border-color: var(--border-color) !important;
 }
 
