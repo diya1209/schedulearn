@@ -1122,8 +1122,8 @@ p {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
-  width: 70%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 450px;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px var(--shadow-color);
@@ -1200,6 +1200,17 @@ p {
 
 .delete-section .btn {
   margin-bottom: var(--spacing-sm);
+  width: auto;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.task-actions .btn {
+  width: auto;
+  min-width: 200px;
+  max-width: 300px;
+  display: block;
+  margin: 0 auto var(--spacing-sm) auto;
 }
 
 .btn-warning {
