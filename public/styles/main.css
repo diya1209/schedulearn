@@ -1175,26 +1175,21 @@ p {
   margin-bottom: var(--spacing-xl);
 }
 
-.task-info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-md) 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.task-info-item:last-child {
-  border-bottom: none;
-}
-
-.task-info-label {
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
 .task-actions h4 {
   margin-bottom: var(--spacing-lg);
   color: var(--text-primary);
+}
+
+.task-actions h5 {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.delete-section {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
 }
 
 .action-buttons {
@@ -1203,10 +1198,8 @@ p {
   margin-bottom: var(--spacing-lg);
 }
 
-.action-buttons .btn {
-  flex: 1;
-  padding: var(--spacing-md);
-  font-size: 0.875rem;
+.delete-section .btn {
+  margin-bottom: var(--spacing-sm);
 }
 
 .btn-warning {

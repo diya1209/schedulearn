@@ -99,19 +99,13 @@ function showTaskDetailPopup(event) {
   
   // Populate popup with event data
   document.getElementById('taskTopicName').textContent = event.title;
-  document.getElementById('taskReviewDate').textContent = event.start.toLocaleDateString();
-  
-  // Get study period from event properties
-  const startDate = event.extendedProps?.startDate || event.start.toISOString().split('T')[0];
-  const endDate = event.extendedProps?.endDate || event.start.toISOString().split('T')[0];
-  document.getElementById('taskStudyPeriod').textContent = `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`;
   
   // Store event data for delete operations
   popup.dataset.eventId = event.extendedProps?.eventId || event.id || '';
   popup.dataset.eventTitle = event.title;
   popup.dataset.eventDate = event.start.toISOString().split('T')[0];
-  popup.dataset.startDate = startDate;
-  popup.dataset.endDate = endDate;
+  popup.dataset.startDate = event.extendedProps?.startDate || event.start.toISOString().split('T')[0];
+  popup.dataset.endDate = event.extendedProps?.endDate || event.start.toISOString().split('T')[0];
   
   console.log('Event data stored:', {
     eventId: popup.dataset.eventId,

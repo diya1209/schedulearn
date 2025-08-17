@@ -108,46 +108,24 @@
                 <button class="task-popup-close" onclick="closeTaskPopup()">&times;</button>
             </div>
             <div class="task-popup-body">
-                <div class="task-info">
-                    <div class="task-info-item">
-                        <span class="task-info-label">Topic:</span>
-                        <span id="taskTopicName">-</span>
-                    </div>
-                    <div class="task-info-item">
-                        <span class="task-info-label">Review Date:</span>
-                        <span id="taskReviewDate">-</span>
-                    </div>
-                    <div class="task-info-item">
-                        <span class="task-info-label">Study Period:</span>
-                        <span id="taskStudyPeriod">-</span>
-                    </div>
-                </div>
+                <h4 id="taskTopicName">-</h4>
+                
                 <div class="task-actions">
-                    <h4>What would you like to do?</h4>
-                    <div class="action-buttons">
-                        <button class="btn btn-success" id="completeTaskBtn">
-                            <span class="btn-icon">✅</span>
-                            Mark as Completed
-                        </button>
-                        <button class="btn btn-warning" id="deleteTaskBtn">
+                    <button class="btn btn-success btn-full" id="completeTaskBtn">
+                        <span class="btn-icon">✅</span>
+                        Mark as Completed
+                    </button>
+                    
+                    <div class="delete-section">
+                        <h5>Delete Options</h5>
+                        <button class="btn btn-warning btn-full" id="deleteTaskBtn">
                             <span class="btn-icon">🗑️</span>
                             Delete This Review
                         </button>
-                        <button class="btn btn-error" id="deleteScheduleBtn">
+                        <button class="btn btn-error btn-full" id="deleteScheduleBtn">
                             <span class="btn-icon">❌</span>
                             Delete Entire Schedule
                         </button>
-                    </div>
-                    <div class="action-descriptions">
-                        <div class="action-desc">
-                            <strong>✅ Mark as Completed:</strong> Mark this review as studied. The task will turn grey to show completion.
-                        </div>
-                        <div class="action-desc">
-                            <strong>🗑️ Delete This Review:</strong> Remove only this specific review date from your schedule.
-                        </div>
-                        <div class="action-desc">
-                            <strong>❌ Delete Entire Schedule:</strong> Remove all review dates for this topic permanently.
-                        </div>
                     </div>
                 </div>
             </div>
