@@ -131,20 +131,125 @@ function closeTaskPopup() {
   popup.classList.remove('show');
 }
 
-function setupDeleteHandlers() {
+function setupTaskActionHandlers() {
+  const completeTaskBtn = document.getElementById('completeTaskBtn');
   const deleteTaskBtn = document.getElementById('deleteTaskBtn');
   const deleteScheduleBtn = document.getElementById('deleteScheduleBtn');
   
   // Remove existing listeners
+  completeTaskBtn.replaceWith(completeTaskBtn.cloneNode(true));
   deleteTaskBtn.replaceWith(deleteTaskBtn.cloneNode(true));
   deleteScheduleBtn.replaceWith(deleteScheduleBtn.cloneNode(true));
   
   // Get new references
+  const newCompleteTaskBtn = document.getElementById('completeTaskBtn');
   const newDeleteTaskBtn = document.getElementById('deleteTaskBtn');
   const newDeleteScheduleBtn = document.getElementById('deleteScheduleBtn');
   
+  // Check if task is already completed
+  const popup = document.getElementById('taskDetailPopup');
+  const isCompleted = popup.dataset.completed === '1';
+  
+  if (isCompleted) {
+    newCompleteTaskBtn.disabled = true;
+    newCompleteTaskBtn.innerHTML = '<span class="btn-icon">✅</span>Already Completed';
+    newCompleteTaskBtn.style.opacity = '0.6';
+    newCompleteTaskBtn.style.cursor = 'not-allowed';
+  } else {
+    newCompleteTaskBtn.addEventListener('click', handleCompleteTask);
+  }
+  
   newDeleteTaskBtn.addEventListener('click', handleDeleteTask);
   newDeleteScheduleBtn.addEventListener('click', handleDeleteSchedule);
+}
+
+async function handleCompleteTask() {
+  const popup = document.getElementById('taskDetailPopup');
+  const eventId = popup.dataset.eventId;
+  const eventTitle = popup.dataset.eventTitle;
+  const eventDate = popup.dataset.eventDate;
+  
+  console.log('=== COMPLETE TASK DEBUG ===');
+  console.log('Event ID:', eventId);
+  console.log('Event Title:', eventTitle);
+  console.log('Event Date:', eventDate);
+  
+  // Show custom confirmation
+  const confirmed = await showCustomConfirm(
+    'Mark Task as Completed?',
+    `Great job! Mark "${eventTitle}" on ${new Date(eventDate).toLocaleDateString()} as completed?`
+  );
+  
+  if (!confirmed) {
+    console.log('User cancelled complete task operation');
+    return;
+  }
+  
+  console.log('User confirmed complete task operation');
+  
+  try {
+    const requestBody = {
+      topicName: eventTitle,
+      eventDate: eventDate
+    };
+    
+    // Include eventId if available for more precise completion
+    if (eventId) {
+      requestBody.eventId = parseInt(eventId);
+    }
+    
+    console.log('Request body being sent:', requestBody);
+    console.log('Making POST request to /api/complete-task...');
+    
+    const response = await fetch('/api/complete-task', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    });
+    
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Authentication required - redirecting to login');
+        window.location.href = '/login';
+        return;
+      }
+      
+      try {
+        const errorResult = await response.json();
+        console.log('Error response from server:', errorResult);
+        showMessage(errorResult.error || 'Failed to mark task as completed', 'error');
+      } catch (parseError) {
+        console.log('Failed to parse error response:', parseError);
+        showMessage('Failed to mark task as completed', 'error');
+      }
+      return;
+    }
+    
+    const result = await response.json();
+    console.log('Success response from server:', result);
+    
+    if (result.success) {
+      console.log('Task marked as completed successfully, closing popup and refreshing calendar');
+      // Close the task detail popup after successful completion
+      closeTaskPopup();
+      // Refresh calendar to show completed state
+      if (window.calendar) {
+        window.calendar.refetchEvents();
+      }
+      showMessage('🎉 Great job! Task marked as completed!', 'success');
+    } else {
+      console.log('Server returned success=false:', result);
+      showMessage(result.error || 'Failed to mark task as completed', 'error');
+    }
+  } catch (error) {
+    console.error('Network/JavaScript error during complete task:', error);
+    showMessage('Network error. Please try again.', 'error');
+  }
 }
 
 async function handleDeleteTask() {

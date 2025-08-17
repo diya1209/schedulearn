@@ -263,6 +263,52 @@ app.get('/api/user', requireAuth, (req, res) => {
   res.json({ username: req.session.username });
 });
 
+// Mark task as completed
+app.post('/api/complete-task', requireAuth, async (req, res) => {
+  const { eventId, topicName, eventDate } = req.body;
+  const userId = req.session.userId;
+  
+  console.log('=== COMPLETE TASK SERVER DEBUG ===');
+  console.log('User ID:', userId);
+  console.log('Event ID:', eventId);
+  console.log('Topic Name:', topicName);
+  console.log('Event Date:', eventDate);
+  
+  try {
+    let result;
+    if (eventId) {
+      console.log('Attempting to mark complete by event ID...');
+      result = await db.run(`
+        UPDATE events 
+        SET completed = 1 
+        WHERE id = ? AND user_id = ?`, 
+        eventId, userId);
+      console.log('Update by ID result:', result);
+    } else {
+      console.log('Attempting to mark complete by topic name and date...');
+      result = await db.run(`
+        UPDATE events 
+        SET completed = 1 
+        WHERE user_id = ? AND topic_name = ? AND event_date = ?`, 
+        userId, topicName, eventDate);
+      console.log('Update by topic/date result:', result);
+    }
+    
+    console.log('Changes made:', result.changes);
+    
+    if (result.changes === 0) {
+      console.log('No records were updated - task not found');
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    
+    console.log('Task marked as completed successfully');
+    res.json({ success: true, message: 'Task marked as completed!' });
+  } catch (error) {
+    console.error('Database error during task completion:', error);
+    res.status(500).json({ error: 'Failed to mark task as completed' });
+  }
+});
+
 // Delete single task (specific date)
 app.post('/api/delete-task', requireAuth, async (req, res) => {
   const { eventId, topicName, eventDate } = req.body;
