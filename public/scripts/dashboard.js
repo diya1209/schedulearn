@@ -325,13 +325,16 @@ function showMessage(message, type) {
   messageDiv.className = 'dashboard-message';
   messageDiv.style.cssText = `
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     padding: 12px 16px;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     z-index: 10002;
+    min-width: 200px;
+    text-align: center;
     ${type === 'error' 
       ? 'background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;'
       : 'background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;'
