@@ -85,9 +85,19 @@ function initializeCalendar() {
       }
     },
     dateClick: function(info) {
+      console.log('=== DATE CLICK DETECTED ===');
+      console.log('Clicked date:', info.dateStr);
+      console.log('Move mode active:', window.moveMode);
+      console.log('Move event data:', window.moveEventData);
+      
       if (window.moveMode && window.eventToMove) {
+        console.log('Processing move to date:', info.dateStr);
         // Move the selected event to this date
         moveEventToDate(window.eventToMove, info.dateStr);
+      } else {
+        console.log('Move mode not active or no event data available');
+        if (!window.moveMode) console.log('Move mode is false');
+        if (!window.moveEventData) console.log('Move event data is null/undefined');
       }
     },
     eventDidMount: function(info) {
@@ -277,12 +287,19 @@ async function handleMoveTask() {
 }
 
 function enterMoveMode(eventId, eventTitle, eventDate) {
+  console.log('=== ENTERING MOVE MODE ===');
+  console.log('Setting move mode variables:', { eventId, eventTitle, eventDate });
+  
   // Set global move mode variables
   window.moveMode = true;
   window.moveEventData = { eventId, eventTitle, eventDate };
   
+  console.log('Move mode set to:', window.moveMode);
+  console.log('Move event data stored:', window.moveEventData);
+  
   // Add visual styling for move mode
   document.body.classList.add('move-mode');
+  console.log('Added move-mode class to body');
   
   // Show instruction overlay
   const instruction = document.createElement('div');
@@ -292,35 +309,49 @@ function enterMoveMode(eventId, eventTitle, eventDate) {
     <button onclick="exitMoveMode()" style="margin-left: 15px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Cancel</button>
   `;
   document.body.appendChild(instruction);
+  console.log('Added instruction overlay');
   
   // Store instruction element for cleanup
   window.moveInstruction = instruction;
+  console.log('=== MOVE MODE SETUP COMPLETE ===');
 }
 
 function exitMoveMode() {
+  console.log('=== EXITING MOVE MODE ===');
   // Reset move mode
   window.moveMode = false;
   window.eventToMove = null;
   window.moveEventData = null;
+  console.log('Reset move mode variables');
   
   // Remove visual styling
   document.body.classList.remove('move-mode');
+  console.log('Removed move-mode class from body');
   
   // Remove instruction overlay
   if (window.moveInstruction) {
     window.moveInstruction.remove();
     window.moveInstruction = null;
+    console.log('Removed instruction overlay');
   }
+  console.log('=== MOVE MODE EXIT COMPLETE ===');
 }
 
-async function moveEventToDate(event, newDate) {
-  const { eventId, eventTitle, eventDate } = window.moveEventData;
+async function moveEventToDate(moveData, newDate) {
+  console.log('=== MOVE EVENT TO DATE ===');
+  console.log('Move data received:', moveData);
+  console.log('New date:', newDate);
   
-  console.log('=== MOVE EVENT TO DATE DEBUG ===');
-  console.log('Moving to date:', newDate);
-  console.log('Event data:', window.moveEventData);
+  const { eventId, eventTitle, eventDate } = moveData;
+  
+  console.log('Extracted data:');
+  console.log('- Event ID:', eventId);
+  console.log('- Event Title:', eventTitle);
+  console.log('- Original Date:', eventDate);
+  console.log('- New Date:', newDate);
   
   // Show confirmation
+  console.log('Showing confirmation dialog...');
   const confirmed = await showCustomConfirm(
     'Move Task?',
     `Move "${eventTitle}" from ${new Date(eventDate).toLocaleDateString()} to ${new Date(newDate).toLocaleDateString()}?`
@@ -331,6 +362,8 @@ async function moveEventToDate(event, newDate) {
     exitMoveMode();
     return;
   }
+  
+  console.log('User confirmed move operation');
   
   try {
     const requestBody = {
@@ -345,6 +378,7 @@ async function moveEventToDate(event, newDate) {
     }
     
     console.log('Request body being sent:', requestBody);
+    console.log('Making POST request to /api/move-task...');
     
     const response = await fetch('/api/move-task', {
       method: 'POST',
@@ -354,16 +388,22 @@ async function moveEventToDate(event, newDate) {
       body: JSON.stringify(requestBody)
     });
     
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
     if (!response.ok) {
       if (response.status === 401) {
+        console.log('Authentication required - redirecting to login');
         window.location.href = '/login';
         return;
       }
       
       try {
         const errorResult = await response.json();
+        console.log('Error response from server:', errorResult);
         showMessage(errorResult.error || 'Failed to move task', 'error');
       } catch (parseError) {
+        console.log('Failed to parse error response:', parseError);
         showMessage('Failed to move task', 'error');
       }
       exitMoveMode();
@@ -371,18 +411,22 @@ async function moveEventToDate(event, newDate) {
     }
     
     const result = await response.json();
+    console.log('Success response from server:', result);
     
     if (result.success) {
+      console.log('Task moved successfully, exiting move mode and refreshing calendar');
       // Exit move mode
       exitMoveMode();
       
       // Refresh calendar to show moved task
       if (window.calendar) {
+        console.log('Refreshing calendar events...');
         window.calendar.refetchEvents();
       }
       
       showMessage(`📅 Task moved to ${new Date(newDate).toLocaleDateString()} successfully!`, 'success');
     } else {
+      console.log('Server returned success=false:', result);
       showMessage(result.error || 'Failed to move task', 'error');
       exitMoveMode();
     }
