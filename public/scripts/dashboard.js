@@ -169,9 +169,6 @@ async function handleDeleteTask() {
     return;
   }
   
-  // Close the task detail popup after confirmation
-  closeTaskPopup();
-  
   console.log('User confirmed delete task operation');
   
   try {
@@ -224,6 +221,8 @@ async function handleDeleteTask() {
     
     if (result.success) {
       console.log('Task deleted successfully, closing popup and refreshing calendar');
+      // Close the task detail popup after successful deletion
+      closeTaskPopup();
       // Refresh calendar
       if (window.calendar) {
         window.calendar.refetchEvents();
@@ -256,9 +255,6 @@ async function handleDeleteSchedule() {
     console.log('User cancelled delete schedule operation');
     return;
   }
-  
-  // Close the task detail popup after confirmation
-  closeTaskPopup();
   
   console.log('User confirmed delete schedule operation');
   
@@ -303,6 +299,8 @@ async function handleDeleteSchedule() {
     
     if (result.success) {
       console.log('Schedule deleted successfully, closing popup and refreshing calendar');
+      // Close the task detail popup after successful deletion
+      closeTaskPopup();
       // Refresh calendar
       if (window.calendar) {
         window.calendar.refetchEvents();
