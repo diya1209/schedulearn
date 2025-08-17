@@ -106,11 +106,13 @@ function showTaskDetailPopup(event) {
   popup.dataset.eventDate = event.start.toISOString().split('T')[0];
   popup.dataset.startDate = event.extendedProps?.startDate || event.start.toISOString().split('T')[0];
   popup.dataset.endDate = event.extendedProps?.endDate || event.start.toISOString().split('T')[0];
+  popup.dataset.completed = event.extendedProps?.completed || 'false';
   
   console.log('Event data stored:', {
     eventId: popup.dataset.eventId,
     title: popup.dataset.eventTitle,
-    date: popup.dataset.eventDate
+    date: popup.dataset.eventDate,
+    completed: popup.dataset.completed
   });
   
   // Setup delete button handlers
@@ -142,7 +144,7 @@ function setupTaskActionHandlers() {
   
   // Check if task is already completed
   const popup = document.getElementById('taskDetailPopup');
-  const isCompleted = popup.dataset.completed === '1';
+  const isCompleted = popup.dataset.completed === 'true' || popup.dataset.completed === '1';
   
   if (isCompleted) {
     newCompleteTaskBtn.disabled = true;
@@ -527,6 +529,15 @@ function showCustomConfirm(title, message) {
     // Set content
     titleEl.textContent = title;
     messageEl.textContent = message;
+    
+    // Change button text based on the action
+    if (title.includes('Completed')) {
+      deleteBtn.textContent = 'Complete';
+      deleteBtn.className = 'btn btn-success';
+    } else {
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.className = 'btn btn-error';
+    }
     
     // Show popup
     popup.classList.add('show');
