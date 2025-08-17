@@ -984,6 +984,7 @@ p {
   overflow-wrap: break-word !important;
   line-height: 1.2 !important;
   min-height: auto !important;
+  cursor: pointer !important;
 }
 
 .fc-event:hover {
