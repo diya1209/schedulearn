@@ -97,6 +97,11 @@ function initializeCalendar() {
 function showTaskDetailPopup(event) {
   const popup = document.getElementById('taskDetailPopup');
   
+  console.log('=== SHOW TASK DETAIL POPUP ===');
+  console.log('Event object:', event);
+  console.log('Event title:', event.title);
+  console.log('Event extendedProps:', event.extendedProps);
+  
   // Populate popup with event data
   document.getElementById('taskTopicName').textContent = event.title;
   
@@ -132,6 +137,11 @@ function setupTaskActionHandlers() {
   const deleteTaskBtn = document.getElementById('deleteTaskBtn');
   const deleteScheduleBtn = document.getElementById('deleteScheduleBtn');
   
+  console.log('=== SETUP TASK ACTION HANDLERS ===');
+  console.log('Complete button found:', !!completeTaskBtn);
+  console.log('Delete task button found:', !!deleteTaskBtn);
+  console.log('Delete schedule button found:', !!deleteScheduleBtn);
+  
   // Remove existing listeners
   completeTaskBtn.replaceWith(completeTaskBtn.cloneNode(true));
   deleteTaskBtn.replaceWith(deleteTaskBtn.cloneNode(true));
@@ -146,12 +156,22 @@ function setupTaskActionHandlers() {
   const popup = document.getElementById('taskDetailPopup');
   const isCompleted = popup.dataset.completed === 'true' || popup.dataset.completed === '1';
   
+  console.log('Task completion status:', {
+    completed: popup.dataset.completed,
+    isCompleted: isCompleted,
+    eventId: popup.dataset.eventId,
+    eventTitle: popup.dataset.eventTitle,
+    eventDate: popup.dataset.eventDate
+  });
+  
   if (isCompleted) {
+    console.log('Task is already completed, disabling button');
     newCompleteTaskBtn.disabled = true;
     newCompleteTaskBtn.innerHTML = '<span class="btn-icon">✅</span>Already Completed';
     newCompleteTaskBtn.style.opacity = '0.6';
     newCompleteTaskBtn.style.cursor = 'not-allowed';
   } else {
+    console.log('Task is not completed, adding click handler');
     newCompleteTaskBtn.addEventListener('click', handleCompleteTask);
   }
   
@@ -169,6 +189,7 @@ async function handleCompleteTask() {
   console.log('Event ID:', eventId);
   console.log('Event Title:', eventTitle);
   console.log('Event Date:', eventDate);
+  console.log('Function called successfully');
   
   // Show custom confirmation
   const confirmed = await showCustomConfirm(
