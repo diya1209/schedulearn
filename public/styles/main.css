@@ -999,8 +999,8 @@ p {
 }
 
 .fc-today {
-  background-color: gray !important;
-  border-color: var(--border-color) !important;
+  background-color: green !important;
+  'border-color: var(--border-color) !important;'
 }
 
 .fc-toolbar-title {
