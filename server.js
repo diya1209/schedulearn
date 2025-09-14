@@ -57,9 +57,6 @@ await db.exec(`
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (task_id) REFERENCES tasks (id)
   );
-
-  -- Add completed column if it doesn't exist (for existing databases)
-  PRAGMA table_info(events);
 `);
 
   // Check if completed column exists and add it if it doesn't
@@ -67,13 +64,14 @@ await db.exec(`
   const hasCompletedColumn = columns.some(col => col.name === 'completed');
   
   if (!hasCompletedColumn) {
+    console.log('Adding missing completed column to events table...');
     await db.exec(`
       ALTER TABLE events ADD COLUMN completed BOOLEAN DEFAULT 0;
     `);
+    console.log('Completed column added successfully');
+  } else {
+    console.log('Completed column already exists');
   }
-
-  await db.exec(`
-`);
 }
 
 // Middleware
