@@ -14,6 +14,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Load stats
   await loadStats();
+  
+  // Setup move mode buttons
+  const confirmMoveBtn = document.getElementById('confirmMoveBtn');
+  const cancelMoveBtn = document.getElementById('cancelMoveBtn');
+  
+  if (confirmMoveBtn) {
+    confirmMoveBtn.addEventListener('click', confirmMove);
+  }
+  
+  if (cancelMoveBtn) {
+    cancelMoveBtn.addEventListener('click', exitMoveMode);
+  }
 });
 
 function checkForSuccessMessage() {
@@ -45,6 +57,9 @@ window.closeSuccessPopup = closeSuccessPopup;
 window.closeTaskPopup = closeTaskPopup;
 window.showCustomConfirm = showCustomConfirm;
 window.closeConfirmPopup = closeConfirmPopup;
+window.enterMoveMode = enterMoveMode;
+window.exitMoveMode = exitMoveMode;
+window.confirmMove = confirmMove;
 
 async function loadUserInfo() {
   try {
@@ -74,7 +89,20 @@ function initializeCalendar() {
     dayMaxEvents: false,
     moreLinkClick: 'popover',
     height: 'auto',
+    editable: false, // Will be enabled in move mode
+    eventDrop: function(info) {
+      if (window.moveMode && window.moveMode.active) {
+        handleEventDrop(info);
+      } else {
+        // Revert if not in move mode
+        info.revert();
+      }
+    },
     eventClick: function(info) {
+      // Don't show popup if in move mode
+      if (window.moveMode && window.moveMode.active) {
+        return;
+      }
       // Show event details
       showTaskDetailPopup(info.event);
     },
@@ -92,6 +120,127 @@ function initializeCalendar() {
   
   // Store calendar instance globally for potential updates
   window.calendar = calendar;
+}
+
+// Move mode functionality
+let moveMode = {
+  active: false,
+  selectedEvent: null,
+  originalDate: null,
+  newDate: null
+};
+window.moveMode = moveMode;
+
+function enterMoveMode(eventData) {
+  console.log('=== ENTERING MOVE MODE ===');
+  console.log('Event data:', eventData);
+  
+  moveMode.active = true;
+  moveMode.selectedEvent = eventData;
+  moveMode.originalDate = eventData.eventDate;
+  moveMode.newDate = null;
+  
+  // Enable dragging on calendar
+  window.calendar.setOption('editable', true);
+  
+  // Show move mode overlay
+  const overlay = document.getElementById('moveModeOverlay');
+  overlay.classList.add('show');
+  
+  // Grey out all events and highlight the selected one
+  const allEvents = window.calendar.getEvents();
+  allEvents.forEach(event => {
+    if (event.title === eventData.eventTitle && event.start.toISOString().split('T')[0] === eventData.eventDate) {
+      // This is the selected event - highlight it
+      event.setProp('className', 'selected-for-move');
+      event.setProp('backgroundColor', '#f59e0b');
+      event.setProp('borderColor', '#f59e0b');
+    } else {
+      // Grey out other events
+      event.setProp('className', 'greyed-out');
+      event.setProp('backgroundColor', '#6b7280');
+      event.setProp('borderColor', '#6b7280');
+    }
+  });
+  
+  console.log('Move mode activated');
+}
+
+function exitMoveMode() {
+  console.log('=== EXITING MOVE MODE ===');
+  
+  moveMode.active = false;
+  moveMode.selectedEvent = null;
+  moveMode.originalDate = null;
+  moveMode.newDate = null;
+  
+  // Disable dragging on calendar
+  window.calendar.setOption('editable', false);
+  
+  // Hide move mode overlay
+  const overlay = document.getElementById('moveModeOverlay');
+  overlay.classList.remove('show');
+  
+  // Refresh calendar to restore original colors
+  window.calendar.refetchEvents();
+  
+  console.log('Move mode deactivated');
+}
+
+function handleEventDrop(info) {
+  console.log('=== EVENT DROPPED ===');
+  console.log('New date:', info.event.start.toISOString().split('T')[0]);
+  
+  moveMode.newDate = info.event.start.toISOString().split('T')[0];
+  
+  // Enable confirm button
+  const confirmBtn = document.getElementById('confirmMoveBtn');
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = `Confirm Move to ${new Date(moveMode.newDate).toLocaleDateString()}`;
+}
+
+async function confirmMove() {
+  if (!moveMode.newDate || !moveMode.selectedEvent) {
+    showMessage('Please drag the task to a new date first', 'error');
+    return;
+  }
+  
+  console.log('=== CONFIRMING MOVE ===');
+  console.log('Moving from:', moveMode.originalDate);
+  console.log('Moving to:', moveMode.newDate);
+  
+  try {
+    const response = await fetch('/api/move-task', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        eventId: moveMode.selectedEvent.eventId,
+        topicName: moveMode.selectedEvent.eventTitle,
+        originalDate: moveMode.originalDate,
+        newDate: moveMode.newDate
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to move task');
+    }
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      showMessage('Task moved successfully!', 'success');
+      exitMoveMode();
+      // Refresh calendar
+      window.calendar.refetchEvents();
+    } else {
+      showMessage(result.error || 'Failed to move task', 'error');
+    }
+  } catch (error) {
+    console.error('Error moving task:', error);
+    showMessage('Failed to move task. Please try again.', 'error');
+  }
 }
 
 function showTaskDetailPopup(event) {
@@ -136,21 +285,25 @@ function setupTaskActionHandlers() {
   const completeTaskBtn = document.getElementById('completeTaskBtn');
   const deleteTaskBtn = document.getElementById('deleteTaskBtn');
   const deleteScheduleBtn = document.getElementById('deleteScheduleBtn');
+  const moveTaskBtn = document.getElementById('moveTaskBtn');
   
   console.log('=== SETUP TASK ACTION HANDLERS ===');
   console.log('Complete button found:', !!completeTaskBtn);
   console.log('Delete task button found:', !!deleteTaskBtn);
   console.log('Delete schedule button found:', !!deleteScheduleBtn);
+  console.log('Move task button found:', !!moveTaskBtn);
   
   // Remove existing listeners
   completeTaskBtn.replaceWith(completeTaskBtn.cloneNode(true));
   deleteTaskBtn.replaceWith(deleteTaskBtn.cloneNode(true));
   deleteScheduleBtn.replaceWith(deleteScheduleBtn.cloneNode(true));
+  moveTaskBtn.replaceWith(moveTaskBtn.cloneNode(true));
   
   // Get new references
   const newCompleteTaskBtn = document.getElementById('completeTaskBtn');
   const newDeleteTaskBtn = document.getElementById('deleteTaskBtn');
   const newDeleteScheduleBtn = document.getElementById('deleteScheduleBtn');
+  const newMoveTaskBtn = document.getElementById('moveTaskBtn');
   
   // Check if task is already completed
   const popup = document.getElementById('taskDetailPopup');
@@ -177,6 +330,25 @@ function setupTaskActionHandlers() {
   
   newDeleteTaskBtn.addEventListener('click', handleDeleteTask);
   newDeleteScheduleBtn.addEventListener('click', handleDeleteSchedule);
+  newMoveTaskBtn.addEventListener('click', handleMoveTask);
+}
+
+function handleMoveTask() {
+  const popup = document.getElementById('taskDetailPopup');
+  const eventData = {
+    eventId: popup.dataset.eventId,
+    eventTitle: popup.dataset.eventTitle,
+    eventDate: popup.dataset.eventDate
+  };
+  
+  console.log('=== MOVE TASK CLICKED ===');
+  console.log('Event data for move:', eventData);
+  
+  // Close the task detail popup
+  closeTaskPopup();
+  
+  // Enter move mode
+  enterMoveMode(eventData);
 }
 
 async function handleCompleteTask() {

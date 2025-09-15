@@ -1359,6 +1359,83 @@ p {
   box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.4);
 }
 
+/* Move Mode Styles */
+.move-mode-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+  pointer-events: none;
+}
+
+.move-mode-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.move-mode-header {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  text-align: center;
+  box-shadow: 0 20px 40px var(--shadow-color);
+  min-width: 400px;
+}
+
+.move-mode-header h3 {
+  margin-bottom: var(--spacing-sm);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.move-mode-header p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+  font-size: 0.875rem;
+}
+
+.move-mode-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.move-mode-actions .btn {
+  min-width: 120px;
+}
+
+/* Event styles for move mode */
+.fc-event.greyed-out {
+  opacity: 0.3 !important;
+  pointer-events: none !important;
+}
+
+.fc-event.selected-for-move {
+  opacity: 1 !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5) !important;
+  transform: scale(1.05) !important;
+  z-index: 1000 !important;
+  cursor: move !important;
+}
+
+.fc-event.selected-for-move:hover {
+  transform: scale(1.1) !important;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
@@ -1407,5 +1484,15 @@ p {
   
   .task-form {
     padding: var(--spacing-lg);
+  }
+  
+  .move-mode-header {
+    min-width: 90%;
+    left: 5%;
+    transform: none;
+  }
+  
+  .move-mode-actions {
+    flex-direction: column;
   }
 }
