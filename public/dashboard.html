@@ -116,6 +116,11 @@
                         Mark as Completed
                     </button>
                     
+                    <button class="btn btn-primary" id="moveTaskBtn">
+                        <span class="btn-icon">📅</span>
+                        Move to Another Day
+                    </button>
+                    
                     <div class="delete-section">
                         <h5>Delete Options</h5>
                         <button class="btn btn-warning" id="deleteTaskBtn">
@@ -131,6 +136,18 @@
             </div>
             <div class="task-popup-footer">
                 <button class="btn btn-outline" onclick="closeTaskPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Mode Overlay -->
+    <div id="moveModeOverlay" class="move-mode-overlay">
+        <div class="move-mode-header">
+            <h3>📅 Move Task Mode</h3>
+            <p>Drag the highlighted task to a new date, then click "Confirm Move"</p>
+            <div class="move-mode-actions">
+                <button class="btn btn-success" id="confirmMoveBtn" disabled>Confirm Move</button>
+                <button class="btn btn-outline" id="cancelMoveBtn">Cancel</button>
             </div>
         </div>
     </div>
