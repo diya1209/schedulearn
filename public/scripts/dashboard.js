@@ -171,7 +171,7 @@ function showMoveInstructions() {
   
   header.innerHTML = `
     <h3>📅 Move Task Mode</h3>
-    <p>Drag the highlighted orange task to a new date on the calendar</p>
+    <p>Drag the orange task to a new date</p>
     <div class="move-mode-actions">
       <button class="btn btn-outline" id="cancelMoveBtn">Cancel</button>
     </div>
