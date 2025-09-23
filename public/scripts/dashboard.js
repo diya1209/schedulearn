@@ -143,9 +143,8 @@ function enterMoveMode(eventData) {
   // Enable dragging on calendar
   window.calendar.setOption('editable', true);
   
-  // Show move mode overlay
-  const overlay = document.getElementById('moveModeOverlay');
-  overlay.classList.add('show');
+  // Show move mode overlay with instructions but no confirm button yet
+  showMoveInstructions();
   
   // Grey out all events and highlight the selected one
   const allEvents = window.calendar.getEvents();
@@ -166,6 +165,59 @@ function enterMoveMode(eventData) {
   console.log('Move mode activated');
 }
 
+function showMoveInstructions() {
+  const overlay = document.getElementById('moveModeOverlay');
+  const header = overlay.querySelector('.move-mode-header');
+  
+  header.innerHTML = `
+    <h3>📅 Move Task Mode</h3>
+    <p>Drag the highlighted orange task to a new date on the calendar</p>
+    <div class="move-mode-actions">
+      <button class="btn btn-outline" id="cancelMoveBtn">Cancel</button>
+    </div>
+  `;
+  
+  // Re-attach cancel button event listener
+  const cancelBtn = document.getElementById('cancelMoveBtn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', exitMoveMode);
+  }
+  
+  overlay.classList.add('show');
+}
+
+function showMoveConfirmation(newDate) {
+  const overlay = document.getElementById('moveModeOverlay');
+  const header = overlay.querySelector('.move-mode-header');
+  
+  const formattedDate = new Date(newDate).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  header.innerHTML = `
+    <h3>📅 Confirm Move</h3>
+    <p>Move "${moveMode.selectedEvent.eventTitle}" to <strong>${formattedDate}</strong>?</p>
+    <div class="move-mode-actions">
+      <button class="btn btn-outline" id="cancelMoveBtn">Cancel</button>
+      <button class="btn btn-success" id="confirmMoveBtn">Confirm Move</button>
+    </div>
+  `;
+  
+  // Re-attach event listeners
+  const cancelBtn = document.getElementById('cancelMoveBtn');
+  const confirmBtn = document.getElementById('confirmMoveBtn');
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', exitMoveMode);
+  }
+  
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', confirmMove);
+  }
+}
 function exitMoveMode() {
   console.log('=== EXITING MOVE MODE ===');
   
@@ -193,10 +245,8 @@ function handleEventDrop(info) {
   
   moveMode.newDate = info.event.start.toISOString().split('T')[0];
   
-  // Enable confirm button
-  const confirmBtn = document.getElementById('confirmMoveBtn');
-  confirmBtn.disabled = false;
-  confirmBtn.textContent = `Confirm Move to ${new Date(moveMode.newDate).toLocaleDateString()}`;
+  // Show confirmation UI
+  showMoveConfirmation(moveMode.newDate);
 }
 
 async function confirmMove() {
