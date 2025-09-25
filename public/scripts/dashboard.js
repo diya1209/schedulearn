@@ -302,7 +302,7 @@ function showTaskDetailPopup(event) {
   console.log('Event extendedProps:', event.extendedProps);
   
   // Populate popup with event data
-  document.getElementById('taskTopicName').textContent = event.title;
+  document.getElementById('taskPopupTitle').textContent = event.title;
   
   // Store event data for delete operations
   popup.dataset.eventId = event.extendedProps?.eventId || event.id || '';

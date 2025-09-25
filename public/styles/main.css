@@ -1123,12 +1123,16 @@ p {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   width: 90%;
-  max-width: 450px;
+  max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px var(--shadow-color);
   transform: scale(0.8) translateY(30px);
   transition: all var(--transition-normal);
+}
+
+.task-popup-content.wider {
+  max-width: 550px;
 }
 
 .task-popup-overlay.show .task-popup-content {
@@ -1206,11 +1210,7 @@ p {
 }
 
 .task-actions .btn {
-  width: auto;
-  min-width: 200px;
-  max-width: 300px;
-  display: block;
-  margin: 0 auto var(--spacing-sm) auto;
+  margin-bottom: var(--spacing-md);
 }
 
 .btn-warning {
@@ -1297,10 +1297,13 @@ p {
 .action-desc:last-child {
   margin-bottom: 0;
 }
-
-.task-popup-footer {
-  padding: var(--spacing-lg) var(--spacing-xl);
-  border-top: 1px solid var(--border-color);
+.btn-full-width {
+  width: 100%;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1rem;
+  font-weight: 600;
   display: flex;
   justify-content: flex-end;
 }
@@ -1396,11 +1399,23 @@ p {
   pointer-events: auto;
 }
 
-.move-mode-header h3 {
-  margin-bottom: var(--spacing-sm);
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.other-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.other-actions .btn {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.other-actions .btn:last-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  max-width: 250px;
   background-clip: text;
 }
 
