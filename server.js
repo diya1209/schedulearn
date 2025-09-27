@@ -140,6 +140,10 @@ app.get('/add-task', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'add-task.html'));
 });
 
+app.get('/info', requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'info.html'));
+});
+
 // API Routes
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
