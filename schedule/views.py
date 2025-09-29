@@ -11,7 +11,7 @@ def demo(request):
     return render(request,'index.html')
 
 def signup(request):
-    return render(request,'sign up.html')
+    return render(request,'signup.html')
 
 def register(request):
     if request.method == 'POST':
@@ -23,8 +23,8 @@ def register(request):
         except User.DoesNotExist: 
             user = User.objects.create_user(username=username,password=password)
             user.save()
-            return redirect("/home")
-    return render(request,"sign up.html")
+            return redirect('dashboard.html)
+    return render(request,"signup.html")
 
 def login(request):
     if request.method == 'POST':
@@ -34,11 +34,11 @@ def login(request):
         if x is None: 
             return redirect("/signup")
         else:
-            return redirect('/home')
+            return redirect('dashboard.html')
     return render(request,"login.html")
 
 def task_form(request):
-    return render(request,"add_task.html")
+    return render(request,"add-task.html")
 
 def add_task(request):
     if request.method=='POST':
