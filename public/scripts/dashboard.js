@@ -739,8 +739,7 @@ async function loadStats() {
 }
 
 function calculateWeekStreak(events) {
-  // Simplified streak calculation
-  // In a real app, you'd want to track actual completion of reviews
+  // Calculate streak based on completed events
   const today = new Date();
   let streak = 0;
   
@@ -749,11 +748,24 @@ function calculateWeekStreak(events) {
     checkDate.setDate(today.getDate() - i);
     const dateStr = checkDate.toISOString().split('T')[0];
     
-    const hasEvents = events.some(event => event.start === dateStr);
-    if (hasEvents) {
-      streak++;
-    } else {
+    // Get all events for this date
+    const dayEvents = events.filter(event => event.start === dateStr);
+    
+    // Check if there are events and if ALL of them are completed
+    if (dayEvents.length > 0) {
+      const allCompleted = dayEvents.every(event => event.extendedProps?.completed);
+      if (allCompleted) {
+        streak++;
+      } else {
+        // If not all events are completed, break the streak
+        break;
+      }
+    } else if (i === 0) {
+      // If today has no events, streak is 0
       break;
+    } else {
+      // If a past day has no events, continue (don't break streak for days with no scheduled reviews)
+      streak++;
     }
   }
   
