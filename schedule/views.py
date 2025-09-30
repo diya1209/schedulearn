@@ -23,7 +23,7 @@ def register(request):
         except User.DoesNotExist: 
             user = User.objects.create_user(username=username,password=password)
             user.save()
-            return redirect('dashboard.html)
+            return redirect("dashboard.html")
     return render(request,"signup.html")
 
 def login(request):
