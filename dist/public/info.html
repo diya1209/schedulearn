@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - Schedulearn</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="dark-theme">
+    <div class="info-container">
+        <nav class="info-nav">
+            <div class="nav-brand">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                        <!-- Grid lines for graph background -->
+                        <line x1="4" y1="28" x2="28" y2="28" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="22" x2="28" y2="22" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="16" x2="28" y2="16" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="10" x2="28" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <!-- Main upward trending line -->
+                        <path d="M4 26 L8 22 L12 18 L16 12 L20 8 L24 6 L28 4" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <!-- Data points -->
+                        <circle cx="4" cy="26" r="1.5" fill="#10b981"/>
+                        <circle cx="8" cy="22" r="1.5" fill="#10b981"/>
+                        <circle cx="12" cy="18" r="1.5" fill="#10b981"/>
+                        <circle cx="16" cy="12" r="1.5" fill="#10b981"/>
+                        <circle cx="20" cy="8" r="1.5" fill="#10b981"/>
+                        <circle cx="24" cy="6" r="1.5" fill="#10b981"/>
+                        <circle cx="28" cy="4" r="2" fill="#10b981" stroke="white" stroke-width="0.5"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea"/>
+                                <stop offset="100%" style="stop-color:#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <a href="/dashboard">← Back to Dashboard</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </nav>
+
+        <main class="info-main">
+            <div class="info-header">
+                <h1>How Schedulearn Works</h1>
+                <p>Understanding the science behind optimized learning</p>
+            </div>
+
+            <div class="info-content">
+                <section class="info-section">
+                    <h2>What is Schedulearn?</h2>
+                    <div class="content-grid">
+                        <div class="text-content">
+                            <p>Schedulearn is a website that generates study schedules based on the <strong>forgetting curve</strong>. The forgetting curve is a psychological concept that states that memory retention declines over time due to insufficient effort to retain information.</p>
+                            
+                            <p>According to research, you forget <strong>50% of all new information within a day</strong> and <strong>90% of all new information within a week</strong>. However, if you review and recall the information a day after you have studied it, the forgetting curve resets and the information is retained in your brain for longer.</p>
+                            
+                            <p>After each review, the amount of information you can remember increases, making your learning more efficient and long-lasting.</p>
+                        </div>
+                        <div class="image-content">
+                            <img src="https://methodsof.com/wp-content/uploads/2022/09/Blog-34-Forgetting-Curve-Infographic.jpg" alt="Forgetting Curve Graph" class="curve-image">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h2>How Does the Algorithm Work?</h2>
+                    <div class="algorithm-content">
+                        <p>The website is based on an algorithm used by the language learning app <strong>SuperMemo</strong>. It works on the principle of calculating an 'Easiness Factor' which represents how easy the task is for you personally.</p>
+                        
+                        <div class="algorithm-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Rate Your Knowledge</h3>
+                                    <p>You rate both your <strong>familiarity</strong> with the topic and its <strong>difficulty</strong> on a scale of 1 to 5.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Calculate Easiness Factor</h3>
+                                    <p>The system calculates your personal Easiness Factor using your ratings.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Generate Schedule</h3>
+                                    <p>Review intervals are calculated and scheduled between your start and end dates.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-section">
+                            <h3>The Formula</h3>
+                            <div class="code-block">
+                                <code>
+                                    EF = (difficulty + familiarity) / 2<br>
+                                    interval = 1<br>
+                                    nextInterval = EF × interval<br>
+                                    nextInterval = round(nextInterval)
+                                </code>
+                            </div>
+                        </div>
+
+                        <div class="explanation">
+                            <h3>What This Means</h3>
+                            <div class="explanation-grid">
+                                <div class="explanation-item">
+                                    <div class="icon">📚</div>
+                                    <h4>Easy & Familiar Topics</h4>
+                                    <p>Longer intervals between reviews - you don't need to study as often</p>
+                                </div>
+                                <div class="explanation-item">
+                                    <div class="icon">🧠</div>
+                                    <h4>Difficult & New Topics</h4>
+                                    <p>Shorter intervals between reviews - more frequent study sessions to master the material</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h2>Getting Started</h2>
+                    <div class="getting-started">
+                        <div class="start-steps">
+                            <div class="start-step">
+                                <span class="step-icon">➕</span>
+                                <div>
+                                    <h4>Create a Schedule</h4>
+                                    <p>Click "New Schedule" and enter your topic details</p>
+                                </div>
+                            </div>
+                            <div class="start-step">
+                                <span class="step-icon">⭐</span>
+                                <div>
+                                    <h4>Rate Difficulty & Familiarity</h4>
+                                    <p>Be honest about your current knowledge level</p>
+                                </div>
+                            </div>
+                            <div class="start-step">
+                                <span class="step-icon">📅</span>
+                                <div>
+                                    <h4>Set Your Timeline</h4>
+                                    <p>Choose when you want to start and finish studying</p>
+                                </div>
+                            </div>
+                            <div class="start-step">
+                                <span class="step-icon">✅</span>
+                                <div>
+                                    <h4>Follow Your Schedule</h4>
+                                    <p>Review topics on the scheduled dates and mark them complete</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="info-footer">
+                <a href="/dashboard" class="btn btn-primary">
+                    <span class="btn-icon">←</span>
+                    Back to Dashboard
+                </a>
+                <a href="/add-task" class="btn btn-outline">
+                    <span class="btn-icon">+</span>
+                    Create Your First Schedule
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts/theme.js"></script>
+</body>
+</html>

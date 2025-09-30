@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Schedulearn</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css">
+</head>
+<body class="dark-theme">
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-brand">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                        <!-- Grid lines for graph background -->
+                        <line x1="4" y1="28" x2="28" y2="28" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="22" x2="28" y2="22" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="16" x2="28" y2="16" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="10" x2="28" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <!-- Main upward trending line -->
+                        <path d="M4 26 L8 22 L12 18 L16 12 L20 8 L24 6 L28 4" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <!-- Data points -->
+                        <circle cx="4" cy="26" r="1.5" fill="#10b981"/>
+                        <circle cx="8" cy="22" r="1.5" fill="#10b981"/>
+                        <circle cx="12" cy="18" r="1.5" fill="#10b981"/>
+                        <circle cx="16" cy="12" r="1.5" fill="#10b981"/>
+                        <circle cx="20" cy="8" r="1.5" fill="#10b981"/>
+                        <circle cx="24" cy="6" r="1.5" fill="#10b981"/>
+                        <circle cx="28" cy="4" r="2" fill="#10b981" stroke="white" stroke-width="0.5"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea"/>
+                                <stop offset="100%" style="stop-color:#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1>Schedulearn</h1>
+            </div>
+            <div class="nav-user">
+                <span class="welcome-text">Welcome, <span id="username"></span></span>
+                <a href="/info" class="btn btn-outline btn-small">How It Works</a>
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="btn btn-outline btn-small" id="logoutBtn">Logout</button>
+            </div>
+        </nav>
+
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h2>Your Calendar</h2>
+                <div class="dashboard-actions">
+                    <a href="/add-task" class="btn btn-primary">
+                        <span class="btn-icon">+</span>
+                        New Schedule
+                    </a>
+                </div>
+            </div>
+
+            <div class="calendar-container">
+                <div id="calendar"></div>
+            </div>
+
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-content">
+                            <h3 id="totalTasks">0</h3>
+                            <p>Active Topics</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <h3 id="todayReviews">0</h3>
+                            <p>Reviews Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-content">
+                            <h3 id="weekStreak">0</h3>
+                            <p>Week Streak</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Success Popup -->
+    <div id="successPopup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="popup-icon">🎉</span>
+            <h3 class="popup-title">Schedule Created!</h3>
+            <button class="popup-button" onclick="closeSuccessPopup()">Okay</button>
+        </div>
+    </div>
+
+    <!-- Task Detail Popup -->
+    <div id="taskDetailPopup" class="task-popup-overlay">
+        <div class="task-popup-content wider">
+            <div class="task-popup-header">
+                <h3 id="taskPopupTitle">Topic Name</h3>
+                <button class="task-popup-close" onclick="closeTaskPopup()">&times;</button>
+            </div>
+            <div class="task-popup-body">
+                <div class="task-actions">
+                    <button class="btn btn-success btn-full-width" id="completeTaskBtn">
+                        <span class="btn-icon">✅</span>
+                        Mark as Completed
+                    </button>
+                    
+                    <div class="other-actions">
+                        <button class="btn btn-primary" id="moveTaskBtn">
+                            <span class="btn-icon">📅</span>
+                            Move to Another Day
+                        </button>
+                        
+                        <button class="btn btn-warning" id="deleteTaskBtn">
+                            <span class="btn-icon">🗑️</span>
+                            Delete This Review
+                        </button>
+                        
+                        <button class="btn btn-error" id="deleteScheduleBtn">
+                            <span class="btn-icon">❌</span>
+                            Delete Entire Schedule
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="task-popup-footer">
+                <button class="btn btn-outline" onclick="closeTaskPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Move Mode Overlay -->
+    <div id="moveModeOverlay" class="move-mode-overlay">
+        <div class="move-mode-header">
+            <h3>📅 Move Task Mode</h3>
+            <p>Drag the highlighted task to a new date, then click "Confirm Move"</p>
+            <div class="move-mode-actions">
+                <button class="btn btn-success" id="confirmMoveBtn" disabled>Confirm Move</button>
+                <button class="btn btn-outline" id="cancelMoveBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Popup -->
+    <div id="confirmationPopup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="popup-icon">⚠️</span>
+            <h3 class="popup-title" id="confirmTitle">Confirm Action</h3>
+            <p class="popup-message" id="confirmMessage">Are you sure you want to proceed?</p>
+            <div class="popup-actions">
+                <button class="btn btn-outline" id="confirmCancel">Cancel</button>
+                <button class="btn btn-error" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Task - Schedulearn</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="dark-theme">
+    <div class="task-container">
+        <nav class="task-nav">
+            <div class="nav-brand">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
+                        <!-- Grid lines for graph background -->
+                        <line x1="4" y1="28" x2="28" y2="28" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="22" x2="28" y2="22" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="16" x2="28" y2="16" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <line x1="4" y1="10" x2="28" y2="10" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                        <!-- Main upward trending line -->
+                        <path d="M4 26 L8 22 L12 18 L16 12 L20 8 L24 6 L28 4" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <!-- Data points -->
+                        <circle cx="4" cy="26" r="1.5" fill="#10b981"/>
+                        <circle cx="8" cy="22" r="1.5" fill="#10b981"/>
+                        <circle cx="12" cy="18" r="1.5" fill="#10b981"/>
+                        <circle cx="16" cy="12" r="1.5" fill="#10b981"/>
+                        <circle cx="20" cy="8" r="1.5" fill="#10b981"/>
+                        <circle cx="24" cy="6" r="1.5" fill="#10b981"/>
+                        <circle cx="28" cy="4" r="2" fill="#10b981" stroke="white" stroke-width="0.5"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea"/>
+                                <stop offset="100%" style="stop-color:#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <a href="/dashboard">← Back to Dashboard</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </nav>
+
+        <main class="task-main">
+            <div class="task-header">
+                <h1>Create Your Study Schedule</h1>
+            </div>
+
+            <form id="addTaskForm" class="task-form">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="topicName">What do you want to study?</label>
+                        <textarea id="topicName" name="topicName" placeholder="e.g., Calculus derivatives, Spanish vocabulary, Biology cell structure..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="familiarity">How familiar are you with this topic?</label>
+                        <select id="familiarity" name="familiarity" required>
+                            <option value="">Select familiarity level</option>
+                            <option value="1">Completely new to me</option>
+                            <option value="2">Somewhat unfamiliar</option>
+                            <option value="3">Neutral</option>
+                            <option value="4">Somewhat familiar</option>
+                            <option value="5">Very familiar</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty">How difficult is this topic?</label>
+                        <select id="difficulty" name="difficulty" required>
+                            <option value="">Select difficulty level</option>
+                            <option value="1">Very difficult</option>
+                            <option value="2">Somewhat difficult</option>
+                            <option value="3">Moderate</option>
+                            <option value="4">Somewhat easy</option>
+                            <option value="5">Very easy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Study Period</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">When will you start studying?</label>
+                            <input type="date" id="startDate" name="startDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endDate">When do you want to finish studying?</label>
+                            <input type="date" id="endDate" name="endDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="taskColor">Choose a color for the schedule
+                        <div class="color-picker-container">
+                            <div class="color-options">
+                                <input type="radio" id="color-blue" name="taskColor" value="#4f46e5" checked>
+                                <label for="color-blue" class="color-option" style="background: #4f46e5;" title="Deep Blue"></label>
+                                
+                                <input type="radio" id="color-slate" name="taskColor" value="#475569">
+                                <label for="color-slate" class="color-option" style="background: #475569;" title="Dark Slate"></label>
+                                
+                                <input type="radio" id="color-navy" name="taskColor" value="#1e3a8a">
+                                <label for="color-navy" class="color-option" style="background: #1e3a8a;" title="Dark Navy"></label>
+                                
+                                <input type="radio" id="color-teal" name="taskColor" value="#0f766e">
+                                <label for="color-teal" class="color-option" style="background: #0f766e;" title="Dark Teal"></label>
+                                
+                                <input type="radio" id="color-cyan" name="taskColor" value="#155e75">
+                                <label for="color-cyan" class="color-option" style="background: #155e75;" title="Dark Cyan"></label>
+                                
+                                <input type="radio" id="color-emerald" name="taskColor" value="#065f46">
+                                <label for="color-emerald" class="color-option" style="background: #065f46;" title="Dark Emerald"></label>
+                                
+                                <input type="radio" id="color-purple" name="taskColor" value="#581c87">
+                                <label for="color-purple" class="color-option" style="background: #581c87;" title="Dark Purple"></label>
+                                
+                                <input type="radio" id="color-indigo" name="taskColor" value="#3730a3">
+                                <label for="color-indigo" class="color-option" style="background: #3730a3;" title="Dark Indigo"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Schedule</button>
+                </div>
+            </form>
+
+        </main>
+    </div>
+
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/add-task.js"></script>
+</body>
+</html>
