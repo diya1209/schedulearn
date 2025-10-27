@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Schedulearn</title>
+    <title>Schedulearn - Smart Study Scheduling</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body class="dark-theme">
-    <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
+    <div class="landing-container">
+        <nav class="navbar">
+            <div class="nav-brand">
                 <div class="auth-logo">
                     <svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="32" height="32" rx="8" fill="url(#logoGradient)"/>
@@ -30,40 +30,70 @@
                         <circle cx="28" cy="4" r="2" fill="#10b981" stroke="white" stroke-width="0.5"/>
                     </svg>
                 </div>
-                <h1>Welcome Back</h1>
-                <p>Log in to continue your learning journey</p>
+                <h1>Schedulearn</h1>
             </div>
-            
-            <form id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Master Any Subject with <span class="gradient-text">Smart Scheduling</span></h1>
+                <p class="hero-description">
+                    Schedulearn uses the scientifically-proven forgetting curve to create personalized study schedules that maximize retention and minimize time wasted.
+                </p>
+                <div class="hero-actions">
+                    <a href="signup.html" class="btn btn-primary btn-large">Start Learning Smarter</a>
+                    <a href="info.html" class="btn btn-outline btn-large">How It Works</a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="password-input-container">
-                        <input type="password" id="password" name="password" required>
-                        <button type="button" class="password-toggle" id="passwordToggle">
-                            <span class="password-toggle-icon">👁️</span>
-                        </button>
+            </div>
+            <div class="hero-visual">
+                <div class="forgetting-curve-demo">
+                    <div class="curve-line"></div>
+                    <div class="review-points">
+                        <div class="point">Day 1</div>
+                        <div class="point">Day 3</div>
+                        <div class="point">Day 7</div>
+                        <div class="point">Day 21</div>
                     </div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary btn-full">Log In</button>
-            </form>
-            
-            <div class="auth-footer">
-                <p>Don't have an account? <a href="/signup">Sign up here</a></p>
             </div>
-        </div>
-        
-        <button class="theme-toggle floating" id="themeToggle">
-            <span class="theme-icon">🌙</span>
-        </button>
+        </section>
+
+        <section class="features-section">
+            <div class="container">
+                <h2 class="section-title">Why Schedulearn Works</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h3>Science-Based</h3>
+                        <p>Built on the forgetting curve research by Hermann Ebbinghaus, proven to improve long-term retention by up to 90%.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📅</div>
+                        <h3>Personalized Scheduling</h3>
+                        <p>Adapts to your familiarity and the difficulty of each topic to create the perfect review schedule.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Maximize Efficiency</h3>
+                        <p>Study less, remember more. Focus your time on what matters most for optimal learning outcomes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2024 Schedulearn. Built with science, designed for success.</p>
+        </footer>
     </div>
 
     <script src="scripts/theme.js"></script>
-    <script src="scripts/auth.js"></script>
+    <script src="scripts/landing.js"></script>
 </body>
 </html>
