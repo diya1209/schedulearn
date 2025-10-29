@@ -1,92 +1,120 @@
-// Authentication handling
+import { supabase } from './supabase.js';
+import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const signupForm = document.getElementById('signupForm');
 
-  // Setup password toggle functionality
   setupPasswordToggle();
 
-  // Handle login form submission
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const formData = new FormData(loginForm);
-      const data = {
-        username: formData.get('username'),
-        password: formData.get('password')
-      };
+      const username = formData.get('username');
+      const password = formData.get('password');
 
       try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
-        });
+        const { data: users, error: queryError } = await supabase
+          .from('users')
+          .select('id, username, password')
+          .eq('username', username)
+          .maybeSingle();
 
-        const result = await response.json();
-
-        if (result.success) {
-          window.location.href = result.redirect;
-        } else {
-          showError(result.error || 'Login failed');
+        if (queryError || !users) {
+          showError('Invalid username or password');
+          return;
         }
+
+        const isValid = await bcrypt.compare(password, users.password);
+        if (!isValid) {
+          showError('Invalid username or password');
+          return;
+        }
+
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        if (signInError) {
+          showError('Login failed. Please try again.');
+          return;
+        }
+
+        localStorage.setItem('userId', users.id);
+        localStorage.setItem('username', users.username);
+        window.location.href = '/dashboard';
       } catch (error) {
+        console.error('Login error:', error);
         showError('Network error. Please try again.');
       }
     });
   }
 
-  // Handle signup form submission
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const formData = new FormData(signupForm);
-      const data = {
-        username: formData.get('username'),
-        password: formData.get('password')
-      };
 
-      // Basic validation
-      if (data.password.length < 6) {
+      const formData = new FormData(signupForm);
+      const username = formData.get('username');
+      const password = formData.get('password');
+
+      if (password.length < 6) {
         showError('Password must be at least 6 characters long');
         return;
       }
 
       try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
-        });
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('username', username)
+          .maybeSingle();
 
-        const result = await response.json();
-
-        if (result.success) {
-          window.location.href = result.redirect;
-        } else {
-          showError(result.error || 'Registration failed');
+        if (existingUser) {
+          showError('Username already exists');
+          return;
         }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        if (signInError) {
+          showError('Registration failed. Please try again.');
+          return;
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const { data: newUser, error: insertError } = await supabase
+          .from('users')
+          .insert([{
+            id: user.id,
+            username,
+            password: hashedPassword
+          }])
+          .select()
+          .single();
+
+        if (insertError) {
+          showError('Registration failed. Please try again.');
+          return;
+        }
+
+        localStorage.setItem('userId', newUser.id);
+        localStorage.setItem('username', newUser.username);
+        window.location.href = '/dashboard';
       } catch (error) {
+        console.error('Signup error:', error);
         showError('Network error. Please try again.');
       }
     });
   }
 
-  // Error display function
   function showError(message) {
-    // Remove existing error messages
     const existingError = document.querySelector('.error-message');
     if (existingError) {
       existingError.remove();
     }
 
-    // Create and show new error message
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
     errorDiv.style.cssText = `
@@ -103,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.auth-form');
     form.insertBefore(errorDiv, form.firstChild);
 
-    // Auto-remove after 5 seconds
     setTimeout(() => {
       if (errorDiv.parentNode) {
         errorDiv.remove();
@@ -111,16 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
   }
 
-  // Password toggle functionality
   function setupPasswordToggle() {
     const passwordToggle = document.getElementById('passwordToggle');
     const passwordInput = document.getElementById('password');
-    
+
     if (passwordToggle && passwordInput) {
       passwordToggle.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
         passwordInput.type = isPassword ? 'text' : 'password';
-        
+
         const icon = passwordToggle.querySelector('.password-toggle-icon');
         icon.textContent = isPassword ? '🙈' : '👁️';
       });
