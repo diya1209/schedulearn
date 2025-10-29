@@ -68,21 +68,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const { error: signInError } = await supabase.auth.signInAnonymously();
         if (signInError) {
           console.error('Sign in error:', signInError);
-          showError('Registration failed. Please try again.');
+          showError(`Registration failed: ${signInError.message}`);
           return;
         }
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          showError('Registration failed. Please try again.');
+          showError('Registration failed: Could not get user');
           return;
         }
 
-        const { data: existingUser } = await supabase
+        console.log('User authenticated:', user.id);
+
+        const { data: existingUser, error: checkError } = await supabase
           .from('users')
           .select('id')
           .eq('username', username)
           .maybeSingle();
+
+        if (checkError) {
+          console.error('Check error:', checkError);
+          await supabase.auth.signOut();
+          showError(`Registration failed: ${checkError.message}`);
+          return;
+        }
 
         if (existingUser) {
           await supabase.auth.signOut();
@@ -90,8 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        console.log('Username available, hashing password...');
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        console.log('Inserting user...');
         const { data: newUser, error: insertError } = await supabase
           .from('users')
           .insert([{
@@ -105,17 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (insertError) {
           console.error('Insert error:', insertError);
           await supabase.auth.signOut();
-          showError('Registration failed. Please try again.');
+          showError(`Registration failed: ${insertError.message}`);
           return;
         }
 
+        console.log('User created successfully:', newUser);
         localStorage.setItem('userId', newUser.id);
         localStorage.setItem('username', newUser.username);
         window.location.href = '/dashboard';
       } catch (error) {
         console.error('Signup error:', error);
         await supabase.auth.signOut();
-        showError('Registration failed. Please try again.');
+        showError(`Registration failed: ${error.message}`);
       }
     });
   }
