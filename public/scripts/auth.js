@@ -1,5 +1,4 @@
 import { supabase } from './supabase.js';
-import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
@@ -16,37 +15,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = formData.get('password');
 
       try {
-        const { error: signInError } = await supabase.auth.signInAnonymously();
+        const email = `${username}@schedulearn.local`;
+
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
         if (signInError) {
+          showError('Invalid username or password');
+          return;
+        }
+
+        const { data: userData, error: queryError } = await supabase
+          .from('users')
+          .select('username')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        if (queryError || !userData) {
           showError('Login failed. Please try again.');
           return;
         }
 
-        const { data: users, error: queryError } = await supabase
-          .from('users')
-          .select('id, username, password')
-          .eq('username', username)
-          .maybeSingle();
-
-        if (queryError || !users) {
-          await supabase.auth.signOut();
-          showError('Invalid username or password');
-          return;
-        }
-
-        const isValid = await bcrypt.compare(password, users.password);
-        if (!isValid) {
-          await supabase.auth.signOut();
-          showError('Invalid username or password');
-          return;
-        }
-
-        localStorage.setItem('userId', users.id);
-        localStorage.setItem('username', users.username);
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('username', userData.username);
         window.location.href = '/dashboard';
       } catch (error) {
         console.error('Login error:', error);
-        showError('Network error. Please try again.');
+        showError('Login failed. Please try again.');
       }
     });
   }
@@ -65,68 +62,47 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        const { error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) {
-          console.error('Sign in error:', signInError);
-          showError(`Registration failed: ${signInError.message}`);
+        const email = `${username}@schedulearn.local`;
+
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              username
+            }
+          }
+        });
+
+        if (signUpError) {
+          console.error('Sign up error:', signUpError);
+          showError(`Registration failed: ${signUpError.message}`);
           return;
         }
 
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          showError('Registration failed: Could not get user');
+        if (!signUpData.user) {
+          showError('Registration failed. Please try again.');
           return;
         }
 
-        console.log('User authenticated:', user.id);
-
-        const { data: existingUser, error: checkError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('username', username)
-          .maybeSingle();
-
-        if (checkError) {
-          console.error('Check error:', checkError);
-          await supabase.auth.signOut();
-          showError(`Registration failed: ${checkError.message}`);
-          return;
-        }
-
-        if (existingUser) {
-          await supabase.auth.signOut();
-          showError('Username already exists');
-          return;
-        }
-
-        console.log('Username available, hashing password...');
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        console.log('Inserting user...');
-        const { data: newUser, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from('users')
           .insert([{
-            id: user.id,
-            username,
-            password: hashedPassword
-          }])
-          .select()
-          .single();
+            id: signUpData.user.id,
+            username
+          }]);
 
         if (insertError) {
           console.error('Insert error:', insertError);
-          await supabase.auth.signOut();
           showError(`Registration failed: ${insertError.message}`);
           return;
         }
 
-        console.log('User created successfully:', newUser);
-        localStorage.setItem('userId', newUser.id);
-        localStorage.setItem('username', newUser.username);
+        localStorage.setItem('userId', signUpData.user.id);
+        localStorage.setItem('username', username);
         window.location.href = '/dashboard';
       } catch (error) {
         console.error('Signup error:', error);
-        await supabase.auth.signOut();
         showError(`Registration failed: ${error.message}`);
       }
     });
