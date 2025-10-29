@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
           email,
           password,
           options: {
+            emailRedirectTo: window.location.origin + '/dashboard',
             data: {
               username
             }
@@ -85,22 +86,29 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert([{
-            id: signUpData.user.id,
-            username
-          }]);
+        console.log('User created:', signUpData.user.id);
+        console.log('Session:', signUpData.session);
 
-        if (insertError) {
-          console.error('Insert error:', insertError);
-          showError(`Registration failed: ${insertError.message}`);
-          return;
+        if (signUpData.session) {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([{
+              id: signUpData.user.id,
+              username
+            }]);
+
+          if (insertError) {
+            console.error('Insert error:', insertError);
+            showError(`Registration failed: ${insertError.message}`);
+            return;
+          }
+
+          localStorage.setItem('userId', signUpData.user.id);
+          localStorage.setItem('username', username);
+          window.location.href = '/dashboard';
+        } else {
+          showError('Email confirmation is required. Please check your email.');
         }
-
-        localStorage.setItem('userId', signUpData.user.id);
-        localStorage.setItem('username', username);
-        window.location.href = '/dashboard';
       } catch (error) {
         console.error('Signup error:', error);
         showError(`Registration failed: ${error.message}`);
