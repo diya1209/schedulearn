@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = formData.get('password');
 
       try {
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        if (signInError) {
+          showError('Login failed. Please try again.');
+          return;
+        }
+
         const { data: users, error: queryError } = await supabase
           .from('users')
           .select('id, username, password')
@@ -23,19 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
           .maybeSingle();
 
         if (queryError || !users) {
+          await supabase.auth.signOut();
           showError('Invalid username or password');
           return;
         }
 
         const isValid = await bcrypt.compare(password, users.password);
         if (!isValid) {
+          await supabase.auth.signOut();
           showError('Invalid username or password');
-          return;
-        }
-
-        const { error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) {
-          showError('Login failed. Please try again.');
           return;
         }
 
@@ -63,6 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
+        const { error: signInError } = await supabase.auth.signInAnonymously();
+        if (signInError) {
+          console.error('Sign in error:', signInError);
+          showError('Registration failed. Please try again.');
+          return;
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          showError('Registration failed. Please try again.');
+          return;
+        }
+
         const { data: existingUser } = await supabase
           .from('users')
           .select('id')
@@ -70,19 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
           .maybeSingle();
 
         if (existingUser) {
+          await supabase.auth.signOut();
           showError('Username already exists');
           return;
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const { error: signInError } = await supabase.auth.signInAnonymously();
-        if (signInError) {
-          showError('Registration failed. Please try again.');
-          return;
-        }
-
-        const { data: { user } } = await supabase.auth.getUser();
 
         const { data: newUser, error: insertError } = await supabase
           .from('users')
@@ -95,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
           .single();
 
         if (insertError) {
+          console.error('Insert error:', insertError);
+          await supabase.auth.signOut();
           showError('Registration failed. Please try again.');
           return;
         }
@@ -104,7 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/dashboard';
       } catch (error) {
         console.error('Signup error:', error);
-        showError('Network error. Please try again.');
+        await supabase.auth.signOut();
+        showError('Registration failed. Please try again.');
       }
     });
   }
