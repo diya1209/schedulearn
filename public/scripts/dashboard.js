@@ -237,7 +237,10 @@ function exitMoveMode() {
 }
 
 function handleEventDrop(info) {
-  moveMode.newDate = info.event.start.toISOString().split('T')[0];
+  const year = info.event.start.getFullYear();
+  const month = String(info.event.start.getMonth() + 1).padStart(2, '0');
+  const day = String(info.event.start.getDate()).padStart(2, '0');
+  moveMode.newDate = `${year}-${month}-${day}`;
   showMoveConfirmation(moveMode.newDate);
 }
 
