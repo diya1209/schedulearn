@@ -1,92 +1,127 @@
-// Authentication handling
+import { supabase } from './supabase.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const signupForm = document.getElementById('signupForm');
 
-  // Setup password toggle functionality
   setupPasswordToggle();
 
-  // Handle login form submission
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const formData = new FormData(loginForm);
-      const data = {
-        username: formData.get('username'),
-        password: formData.get('password')
-      };
+      const username = formData.get('username');
+      const password = formData.get('password');
 
       try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
+        const email = `${username}@schedulearn.local`;
+
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
         });
 
-        const result = await response.json();
-
-        if (result.success) {
-          window.location.href = result.redirect;
-        } else {
-          showError(result.error || 'Login failed');
+        if (signInError) {
+          showError('Invalid username or password');
+          return;
         }
+
+        const { data: userData, error: queryError } = await supabase
+          .from('users')
+          .select('username')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        if (queryError || !userData) {
+          showError('Login failed. Please try again.');
+          return;
+        }
+
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('username', userData.username);
+        window.location.href = '/dashboard';
       } catch (error) {
-        showError('Network error. Please try again.');
+        console.error('Login error:', error);
+        showError('Login failed. Please try again.');
       }
     });
   }
 
-  // Handle signup form submission
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const formData = new FormData(signupForm);
-      const data = {
-        username: formData.get('username'),
-        password: formData.get('password')
-      };
 
-      // Basic validation
-      if (data.password.length < 6) {
+      const formData = new FormData(signupForm);
+      const username = formData.get('username');
+      const password = formData.get('password');
+
+      if (password.length < 6) {
         showError('Password must be at least 6 characters long');
         return;
       }
 
       try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
+        const email = `${username}@schedulearn.local`;
+
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin + '/dashboard',
+            data: {
+              username
+            }
+          }
         });
 
-        const result = await response.json();
+        if (signUpError) {
+          console.error('Sign up error:', signUpError);
+          showError(`Registration failed: ${signUpError.message}`);
+          return;
+        }
 
-        if (result.success) {
-          window.location.href = result.redirect;
+        if (!signUpData.user) {
+          showError('Registration failed. Please try again.');
+          return;
+        }
+
+        console.log('User created:', signUpData.user.id);
+        console.log('Session:', signUpData.session);
+
+        if (signUpData.session) {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([{
+              id: signUpData.user.id,
+              username
+            }]);
+
+          if (insertError) {
+            console.error('Insert error:', insertError);
+            showError(`Registration failed: ${insertError.message}`);
+            return;
+          }
+
+          localStorage.setItem('userId', signUpData.user.id);
+          localStorage.setItem('username', username);
+          window.location.href = '/dashboard';
         } else {
-          showError(result.error || 'Registration failed');
+          showError('Email confirmation is required. Please check your email.');
         }
       } catch (error) {
-        showError('Network error. Please try again.');
+        console.error('Signup error:', error);
+        showError(`Registration failed: ${error.message}`);
       }
     });
   }
 
-  // Error display function
   function showError(message) {
-    // Remove existing error messages
     const existingError = document.querySelector('.error-message');
     if (existingError) {
       existingError.remove();
     }
 
-    // Create and show new error message
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
     errorDiv.style.cssText = `
@@ -103,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.auth-form');
     form.insertBefore(errorDiv, form.firstChild);
 
-    // Auto-remove after 5 seconds
     setTimeout(() => {
       if (errorDiv.parentNode) {
         errorDiv.remove();
@@ -111,16 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
   }
 
-  // Password toggle functionality
   function setupPasswordToggle() {
     const passwordToggle = document.getElementById('passwordToggle');
     const passwordInput = document.getElementById('password');
-    
+
     if (passwordToggle && passwordInput) {
       passwordToggle.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
         passwordInput.type = isPassword ? 'text' : 'password';
-        
+
         const icon = passwordToggle.querySelector('.password-toggle-icon');
         icon.textContent = isPassword ? '🙈' : '👁️';
       });
